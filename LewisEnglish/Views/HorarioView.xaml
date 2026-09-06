@@ -1,0 +1,58 @@
+<UserControl x:Class="LewisEnglish.Views.HorarioView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Grid Margin="30,26">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- Encabezado -->
+        <StackPanel Grid.Row="0">
+            <TextBlock Text="Horario" Style="{StaticResource TituloPagina}" />
+            <TextBlock Text="Clases programadas por dia y franja horaria"
+                       Style="{StaticResource SubtituloPagina}" />
+        </StackPanel>
+
+        <!-- Filtros -->
+        <Border Grid.Row="1" Style="{StaticResource Tarjeta}" Margin="0,14,0,0">
+            <StackPanel Orientation="Horizontal">
+                <StackPanel Margin="0,0,20,0">
+                    <TextBlock Text="Dia" Style="{StaticResource EtiquetaCampo}" />
+                    <ComboBox Width="200" ItemsSource="{Binding DiasSemana}"
+                              SelectedItem="{Binding DiaSeleccionado}" />
+                </StackPanel>
+                <StackPanel>
+                    <TextBlock Text="Franja horaria" Style="{StaticResource EtiquetaCampo}" />
+                    <ComboBox Width="200" ItemsSource="{Binding Franjas}"
+                              SelectedItem="{Binding FranjaSeleccionada}" />
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- Tabla -->
+        <Border Grid.Row="2" Style="{StaticResource Tarjeta}" Margin="0,14,0,0">
+            <DataGrid ItemsSource="{Binding Clases}">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Estudiante" Binding="{Binding Nombre}" Width="*" />
+                    <DataGridTextColumn Header="Horario" Binding="{Binding RangoHorario}" Width="Auto" />
+                    <DataGridTextColumn Header="Frecuencia" Binding="{Binding FrecuenciaTexto}" Width="Auto" />
+                    <DataGridTextColumn Header="Tarifa" Binding="{Binding Tarifa, Converter={StaticResource CurrencyConverter}}" Width="Auto" />
+                    <DataGridTextColumn Header="Estado de pago" Binding="{Binding EstadoPagoTexto}" Width="Auto" />
+                    <DataGridTemplateColumn Header="WhatsApp" Width="Auto">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Content="Mensaje" Style="{StaticResource BotonExito}"
+                                        Padding="10,4" FontSize="12"
+                                        Command="{Binding DataContext.WhatsAppCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                        CommandParameter="{Binding}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
+    </Grid>
+</UserControl>

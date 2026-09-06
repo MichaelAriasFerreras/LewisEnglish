@@ -1,0 +1,20 @@
+# Build artifacts
+bin/
+obj/
+*.user
+
+# Publish output
+publish/
+publish_*/
+
+# Abacus platform metadata
+.abacus.donotdelete
+**/.abacus.donotdelete
+
+# IDE
+.vs/
+*.suo
+
+# OS
+Thumbs.db
+.DS_Store

@@ -1,0 +1,142 @@
+<Window x:Class="LewisEnglish.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:LewisEnglish.ViewModels"
+        xmlns:views="clr-namespace:LewisEnglish.Views"
+        Title="Lewis, English Speaking Coach" Height="780" Width="1240"
+        WindowStartupLocation="CenterScreen"
+        Background="{StaticResource FondoPrincipal}"
+        Icon="/Assets/appicon.ico"
+        MinHeight="640" MinWidth="1040">
+
+    <Window.Resources>
+        <DataTemplate DataType="{x:Type vm:DashboardViewModel}">
+            <views:DashboardView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:EstudiantesViewModel}">
+            <views:EstudiantesView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:HorarioViewModel}">
+            <views:HorarioView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:AsistenciaViewModel}">
+            <views:AsistenciaView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:PagosViewModel}">
+            <views:PagosView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:FacturasViewModel}">
+            <views:FacturasView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:ConfiguracionViewModel}">
+            <views:ConfiguracionView />
+        </DataTemplate>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="240" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- ===================== Sidebar ===================== -->
+        <Border Grid.Column="0" Background="{StaticResource FondoSidebar}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <!-- Logo -->
+                <StackPanel Grid.Row="0" Margin="18,24,18,22">
+                    <Image Source="/Assets/lewis_logo.png" Height="56"
+                           HorizontalAlignment="Center"
+                           RenderOptions.BitmapScalingMode="HighQuality" />
+                    <TextBlock Text="English Speaking Coach" FontSize="11"
+                               Foreground="{StaticResource Turquesa}"
+                               HorizontalAlignment="Center" Margin="0,10,0,0" />
+                </StackPanel>
+
+                <!-- Navegacion -->
+                <StackPanel Grid.Row="1">
+                    <Button Style="{StaticResource BotonNav}"
+                            Command="{Binding NavegarCommand}" CommandParameter="Dashboard">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#128202;" FontSize="16" Margin="0,0,12,0" />
+                            <TextBlock Text="Dashboard" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                    <Button Style="{StaticResource BotonNav}"
+                            Command="{Binding NavegarCommand}" CommandParameter="Estudiantes">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#128101;" FontSize="16" Margin="0,0,12,0" />
+                            <TextBlock Text="Estudiantes" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                    <Button Style="{StaticResource BotonNav}"
+                            Command="{Binding NavegarCommand}" CommandParameter="Horario">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#128197;" FontSize="16" Margin="0,0,12,0" />
+                            <TextBlock Text="Horario" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                    <Button Style="{StaticResource BotonNav}"
+                            Command="{Binding NavegarCommand}" CommandParameter="Asistencia">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#9989;" FontSize="16" Margin="0,0,12,0" />
+                            <TextBlock Text="Asistencia" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                    <Button Style="{StaticResource BotonNav}"
+                            Command="{Binding NavegarCommand}" CommandParameter="Pagos">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#128176;" FontSize="16" Margin="0,0,12,0" />
+                            <TextBlock Text="Pagos" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                    <Button Style="{StaticResource BotonNav}"
+                            Command="{Binding NavegarCommand}" CommandParameter="Facturas">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#129534;" FontSize="16" Margin="0,0,12,0" />
+                            <TextBlock Text="Facturas" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                    <Button Style="{StaticResource BotonNav}"
+                            Command="{Binding NavegarCommand}" CommandParameter="Configuracion">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#9881;" FontSize="16" Margin="0,0,12,0" />
+                            <TextBlock Text="Configuracion" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+
+                <!-- Usuario + Salir -->
+                <StackPanel Grid.Row="2" Margin="14,0,14,18">
+                    <Border Background="{StaticResource FondoPanel}" CornerRadius="12"
+                            Padding="12" Margin="0,0,0,10">
+                        <StackPanel Orientation="Horizontal">
+                            <Border Width="36" Height="36" CornerRadius="18" Background="{StaticResource Turquesa}">
+                                <TextBlock Text="{Binding InicialAdmin}" FontSize="16" FontWeight="Bold" Foreground="White"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                            <StackPanel VerticalAlignment="Center" Margin="10,0,0,0">
+                                <TextBlock Text="{Binding NombreAdmin}" FontSize="13" FontWeight="SemiBold"
+                                           Foreground="{StaticResource TextoPrincipal}" />
+                                <TextBlock Text="Coach" FontSize="11"
+                                           Foreground="{StaticResource TextoSecundario}" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                    <Button Content="Cerrar sesion" Style="{StaticResource BotonPeligro}"
+                            HorizontalAlignment="Stretch" Command="{Binding SalirCommand}" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- ===================== Contenido ===================== -->
+        <Border Grid.Column="1" Background="{StaticResource FondoPrincipal}">
+            <ContentControl Content="{Binding CurrentViewModel}" Margin="0" />
+        </Border>
+    </Grid>
+</Window>

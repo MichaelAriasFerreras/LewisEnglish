@@ -1,0 +1,89 @@
+<UserControl x:Class="LewisEnglish.Views.PagosView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Grid Margin="30,26">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- Encabezado -->
+        <Grid Grid.Row="0">
+            <StackPanel HorizontalAlignment="Left">
+                <TextBlock Text="Pagos" Style="{StaticResource TituloPagina}" />
+                <TextBlock Text="Cobros por periodo, registro de pagos y recordatorios"
+                           Style="{StaticResource SubtituloPagina}" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                <StackPanel Margin="0,0,12,0">
+                    <TextBlock Text="Filtrar" Style="{StaticResource EtiquetaCampo}" />
+                    <ComboBox Width="160" ItemsSource="{Binding FiltrosEstado}"
+                              SelectedItem="{Binding FiltroEstado}" />
+                </StackPanel>
+                <Button Content="Enviar recordatorios" Style="{StaticResource BotonExito}"
+                        VerticalAlignment="Bottom"
+                        Command="{Binding RecordatoriosMasivosCommand}" />
+            </StackPanel>
+        </Grid>
+
+        <!-- Panel de registro de pago -->
+        <Border Grid.Row="1" Style="{StaticResource Tarjeta}" Margin="0,14,0,0">
+            <StackPanel>
+                <TextBlock Text="Registrar pago del periodo seleccionado" FontSize="15" FontWeight="SemiBold"
+                           Foreground="{StaticResource TextoPrincipal}" Margin="0,0,0,10" />
+                <StackPanel Orientation="Horizontal">
+                    <StackPanel Margin="0,0,14,0">
+                        <TextBlock Text="Forma de pago" Style="{StaticResource EtiquetaCampo}" />
+                        <ComboBox Width="180" ItemsSource="{Binding FormasPago}" SelectedItem="{Binding FormaPago}" />
+                    </StackPanel>
+                    <StackPanel Margin="0,0,14,0">
+                        <TextBlock Text="Banco (si es transferencia)" Style="{StaticResource EtiquetaCampo}" />
+                        <ComboBox Width="200" ItemsSource="{Binding Bancos}" SelectedItem="{Binding Banco}" IsEditable="True" />
+                    </StackPanel>
+                    <StackPanel Margin="0,0,14,0">
+                        <TextBlock Text="Fecha de pago" Style="{StaticResource EtiquetaCampo}" />
+                        <DatePicker Width="150" SelectedDate="{Binding FechaPago}" />
+                    </StackPanel>
+                    <Button Content="Registrar pago" Style="{StaticResource BotonPrimario}"
+                            VerticalAlignment="Bottom" Command="{Binding RegistrarPagoCommand}" />
+                </StackPanel>
+                <TextBlock Text="{Binding Mensaje}" Foreground="{StaticResource Verde}"
+                           FontSize="12.5" TextWrapping="Wrap" Margin="0,10,0,0" />
+            </StackPanel>
+        </Border>
+
+        <!-- Tabla -->
+        <Border Grid.Row="2" Style="{StaticResource Tarjeta}" Margin="0,14,0,0">
+            <DataGrid ItemsSource="{Binding Pagos}" SelectedItem="{Binding Seleccionado}">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Estudiante" Binding="{Binding EstudianteNombre}" Width="*" />
+                    <DataGridTextColumn Header="Periodo" Binding="{Binding Etiqueta}" Width="Auto" />
+                    <DataGridTextColumn Header="Frecuencia" Binding="{Binding FrecuenciaTexto}" Width="Auto" />
+                    <DataGridTextColumn Header="Monto" Binding="{Binding Monto, Converter={StaticResource CurrencyConverter}}" Width="Auto" />
+                    <DataGridTemplateColumn Header="Estado" Width="Auto">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding EstadoTexto}" FontWeight="SemiBold"
+                                           VerticalAlignment="Center"
+                                           Foreground="{Binding Estado, Converter={StaticResource EstadoPagoColorConverter}}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn Header="Fecha de pago" Binding="{Binding FechaPago, Converter={StaticResource DateConverter}}" Width="Auto" />
+                    <DataGridTemplateColumn Header="Recordatorio" Width="Auto">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Content="WhatsApp" Style="{StaticResource BotonExito}"
+                                        Padding="10,4" FontSize="12"
+                                        Command="{Binding DataContext.RecordatorioCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                        CommandParameter="{Binding}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
+    </Grid>
+</UserControl>

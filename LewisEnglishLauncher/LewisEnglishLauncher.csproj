@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net7.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <RootNamespace>LewisEnglishLauncher</RootNamespace>
+    <AssemblyName>LewisEnglishLauncher</AssemblyName>
+    <ApplicationIcon>Assets\appicon.ico</ApplicationIcon>
+    <Version>1.0.0</Version>
+    <Product>Lewis, English Speaking Coach - Actualizador</Product>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Assets\lewis_logo.png" />
+    <None Remove="Assets\appicon.ico" />
+    <Resource Include="Assets\lewis_logo.png" />
+    <Resource Include="Assets\appicon.ico" />
+  </ItemGroup>
+
+</Project>

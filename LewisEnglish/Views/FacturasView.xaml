@@ -1,0 +1,45 @@
+<UserControl x:Class="LewisEnglish.Views.FacturasView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Grid Margin="30,26">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- Encabezado -->
+        <Grid Grid.Row="0">
+            <StackPanel HorizontalAlignment="Left">
+                <TextBlock Text="Facturas" Style="{StaticResource TituloPagina}" />
+                <TextBlock Text="Comprobantes de pago generados en PDF"
+                           Style="{StaticResource SubtituloPagina}" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                <Button Content="Abrir" Style="{StaticResource BotonPrimario}"
+                        Command="{Binding AbrirCommand}" Margin="0,0,8,0" />
+                <Button Content="Guardar como..." Style="{StaticResource BotonSecundario}"
+                        Command="{Binding GuardarComoCommand}" />
+            </StackPanel>
+        </Grid>
+
+        <!-- Tabla -->
+        <Border Grid.Row="1" Style="{StaticResource Tarjeta}" Margin="0,14,0,0">
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Bottom" Text="{Binding Mensaje}"
+                           Foreground="{StaticResource Verde}" FontSize="12.5"
+                           Margin="0,10,0,0" />
+                <DataGrid ItemsSource="{Binding Facturas}" SelectedItem="{Binding Seleccionada}">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="No. Factura" Binding="{Binding NumeroFactura}" Width="Auto" />
+                        <DataGridTextColumn Header="Estudiante" Binding="{Binding EstudianteNombre}" Width="*" />
+                        <DataGridTextColumn Header="Periodo" Binding="{Binding Periodo}" Width="Auto" />
+                        <DataGridTextColumn Header="Monto" Binding="{Binding Monto, Converter={StaticResource CurrencyConverter}}" Width="Auto" />
+                        <DataGridTextColumn Header="Fecha" Binding="{Binding Fecha, Converter={StaticResource DateConverter}}" Width="Auto" />
+                        <DataGridTextColumn Header="Forma de pago" Binding="{Binding FormaPagoTexto}" Width="Auto" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </DockPanel>
+        </Border>
+    </Grid>
+</UserControl>

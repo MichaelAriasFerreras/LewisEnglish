@@ -1,0 +1,138 @@
+<UserControl x:Class="LewisEnglish.Views.DashboardView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Grid Margin="30,26">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <!-- Encabezado -->
+            <StackPanel Grid.Row="0">
+                <TextBlock Text="Dashboard" Style="{StaticResource TituloPagina}" />
+                <TextBlock Text="{Binding NombreMes, StringFormat='Resumen de {0}'}"
+                           Style="{StaticResource SubtituloPagina}" />
+            </StackPanel>
+
+            <!-- Tarjetas de metricas -->
+            <UniformGrid Grid.Row="1" Columns="4" Margin="0,4,0,0">
+                <Border Style="{StaticResource Tarjeta}" Margin="0,0,12,0">
+                    <StackPanel>
+                        <TextBlock Text="Estudiantes activos" Foreground="{StaticResource TextoSecundario}" FontSize="12" />
+                        <TextBlock Text="{Binding EstudiantesActivos}" Foreground="{StaticResource TextoPrincipal}"
+                                   FontSize="30" FontWeight="Bold" Margin="0,6,0,0" />
+                    </StackPanel>
+                </Border>
+                <Border Style="{StaticResource Tarjeta}" Margin="0,0,12,0">
+                    <StackPanel>
+                        <TextBlock Text="Cobrado del mes" Foreground="{StaticResource TextoSecundario}" FontSize="12" />
+                        <TextBlock Text="{Binding CobradoMes, Converter={StaticResource CurrencyConverter}}"
+                                   Foreground="{StaticResource Verde}" FontSize="24" FontWeight="Bold" Margin="0,6,0,0" />
+                    </StackPanel>
+                </Border>
+                <Border Style="{StaticResource Tarjeta}" Margin="0,0,12,0">
+                    <StackPanel>
+                        <TextBlock Text="Pendiente del mes" Foreground="{StaticResource TextoSecundario}" FontSize="12" />
+                        <TextBlock Text="{Binding PendienteMes, Converter={StaticResource CurrencyConverter}}"
+                                   Foreground="{StaticResource Naranja}" FontSize="24" FontWeight="Bold" Margin="0,6,0,0" />
+                    </StackPanel>
+                </Border>
+                <Border Style="{StaticResource Tarjeta}">
+                    <StackPanel>
+                        <TextBlock Text="Estudiantes en mora" Foreground="{StaticResource TextoSecundario}" FontSize="12" />
+                        <TextBlock Text="{Binding EstudiantesEnMora}" Foreground="{StaticResource Rojo}"
+                                   FontSize="30" FontWeight="Bold" Margin="0,6,0,0" />
+                    </StackPanel>
+                </Border>
+            </UniformGrid>
+
+            <!-- Esperado del mes + ingresos por mes -->
+            <Grid Grid.Row="2" Margin="0,16,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="2*" />
+                </Grid.ColumnDefinitions>
+
+                <Border Style="{StaticResource Tarjeta}" Margin="0,0,12,0">
+                    <StackPanel>
+                        <TextBlock Text="Total esperado del mes" Foreground="{StaticResource TextoSecundario}" FontSize="12" />
+                        <TextBlock Text="{Binding EsperadoMes, Converter={StaticResource CurrencyConverter}}"
+                                   Foreground="{StaticResource Turquesa}" FontSize="26" FontWeight="Bold" Margin="0,6,0,10" />
+                        <TextBlock Text="Cobrado + pendiente de los periodos del mes actual."
+                                   Foreground="{StaticResource TextoSecundario}" FontSize="11" TextWrapping="Wrap" />
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Column="1" Style="{StaticResource Tarjeta}">
+                    <StackPanel>
+                        <TextBlock Text="Ingresos por mes (ultimos 6 meses)" FontSize="14" FontWeight="SemiBold"
+                                   Foreground="{StaticResource TextoPrincipal}" Margin="0,0,0,10" />
+                        <ItemsControl ItemsSource="{Binding IngresosPorMes}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="0,4">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="90" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="120" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="{Binding Mes}" Foreground="{StaticResource TextoSecundario}"
+                                                   VerticalAlignment="Center" FontSize="12" />
+                                        <Border Grid.Column="1" Background="{StaticResource FondoPrincipal}" CornerRadius="6" Height="18"
+                                                VerticalAlignment="Center">
+                                            <Border Background="{StaticResource Turquesa}" CornerRadius="6"
+                                                    HorizontalAlignment="Left" Width="{Binding Monto}" MaxWidth="360" />
+                                        </Border>
+                                        <TextBlock Grid.Column="2" Text="{Binding Monto, Converter={StaticResource CurrencyConverter}}"
+                                                   Foreground="{StaticResource TextoPrincipal}" VerticalAlignment="Center"
+                                                   HorizontalAlignment="Right" FontSize="12" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- Proximas clases + pagos vencidos -->
+            <Grid Grid.Row="3" Margin="0,16,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Border Style="{StaticResource Tarjeta}" Margin="0,0,12,0">
+                    <StackPanel>
+                        <TextBlock Text="Proximas clases" FontSize="14" FontWeight="SemiBold"
+                                   Foreground="{StaticResource TextoPrincipal}" Margin="0,0,0,8" />
+                        <DataGrid ItemsSource="{Binding ProximasClases}" MaxHeight="240">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Estudiante" Binding="{Binding Nombre}" Width="*" />
+                                <DataGridTextColumn Header="Dia" Binding="{Binding DiaClaseTexto}" Width="Auto" />
+                                <DataGridTextColumn Header="Horario" Binding="{Binding RangoHorario}" Width="Auto" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Column="1" Style="{StaticResource Tarjeta}">
+                    <StackPanel>
+                        <TextBlock Text="Pagos vencidos" FontSize="14" FontWeight="SemiBold"
+                                   Foreground="{StaticResource Rojo}" Margin="0,0,0,8" />
+                        <DataGrid ItemsSource="{Binding PagosVencidos}" MaxHeight="240">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Estudiante" Binding="{Binding EstudianteNombre}" Width="*" />
+                                <DataGridTextColumn Header="Periodo" Binding="{Binding Etiqueta}" Width="Auto" />
+                                <DataGridTextColumn Header="Monto" Binding="{Binding Monto, Converter={StaticResource CurrencyConverter}}" Width="Auto" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Grid>
+    </ScrollViewer>
+</UserControl>
