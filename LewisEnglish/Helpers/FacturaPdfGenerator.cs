@@ -17,6 +17,7 @@ namespace LewisEnglish.Helpers
         private const string Navy = "#1A3A52";
         private const string Turquesa = "#00A9A5";
         private const string TurquesaSuave = "#D6F0EF";
+        private const string MarcaAgua = "#EEF9F8";
         private const string GrisTexto = "#3A3A3A";
         private const string GrisSuave = "#EEF2F7";
 
@@ -76,9 +77,9 @@ namespace LewisEnglish.Helpers
                     page.Margin(28);
                     page.DefaultTextStyle(x => x.FontSize(10).FontColor(GrisTexto));
 
-                    // Marca de agua "PAGADO"
-                    page.Foreground().AlignCenter().AlignMiddle()
-                        .Text("PAGADO").FontSize(90).Bold().FontColor(TurquesaSuave);
+                    // Marca de agua "PAGADO" (fondo, muy claro para no tapar el texto)
+                    page.Background().AlignCenter().AlignMiddle()
+                        .Text("PAGADO").FontSize(90).Bold().FontColor(MarcaAgua);
 
                     // ---------- Encabezado ----------
                     page.Header().Column(col =>
@@ -151,8 +152,15 @@ namespace LewisEnglish.Helpers
                         col.Item().PaddingTop(6).Border(1).BorderColor(GrisSuave).Padding(8).Column(c =>
                         {
                             c.Item().Text("Detalle del pago").Bold().FontColor(Navy);
+                            c.Item().Text($"Fecha de pago: {factura.Fecha:dd/MM/yyyy}");
                             c.Item().Text($"Forma de pago: {factura.FormaPagoTexto}");
-                            c.Item().Text($"Estado: PAGADO");
+                            if (factura.FormaPago == FormaPago.Transferencia && !string.IsNullOrWhiteSpace(factura.Banco))
+                                c.Item().Text($"Banco: {factura.Banco}");
+                            c.Item().Text(t =>
+                            {
+                                t.Span("Estado: ");
+                                t.Span("PAGADO").Bold().FontColor(Turquesa);
+                            });
                         });
                     });
 

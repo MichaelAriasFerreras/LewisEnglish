@@ -90,7 +90,7 @@
                     </StackPanel>
                     <StackPanel Grid.Row="3" Grid.Column="1" Margin="0,0,10,0">
                         <TextBlock Text="Banco (si es transferencia)" Style="{StaticResource EtiquetaCampo}" />
-                        <ComboBox ItemsSource="{Binding Bancos}" SelectedItem="{Binding Editable.Banco}" IsEditable="True" />
+                        <ComboBox ItemsSource="{Binding Bancos}" SelectedItem="{Binding Editable.Banco}" />
                     </StackPanel>
                     <StackPanel Grid.Row="3" Grid.Column="2" Margin="0,0,0,0">
                         <TextBlock Text="Estado" Style="{StaticResource EtiquetaCampo}" />

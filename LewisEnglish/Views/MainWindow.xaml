@@ -51,7 +51,8 @@
 
                 <!-- Logo -->
                 <StackPanel Grid.Row="0" Margin="18,24,18,22">
-                    <Image Source="/Assets/lewis_logo.png" Height="56"
+                    <Image Source="pack://application:,,,/Assets/lewis_logo.png" Height="56"
+                           Stretch="Uniform"
                            HorizontalAlignment="Center"
                            RenderOptions.BitmapScalingMode="HighQuality" />
                     <TextBlock Text="English Speaking Coach" FontSize="11"

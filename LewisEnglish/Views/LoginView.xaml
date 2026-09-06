@@ -24,8 +24,8 @@
 
             <StackPanel Grid.Row="1" VerticalAlignment="Center" Margin="44,0">
 
-                <Image Source="/Assets/lewis_logo.png" Height="90" HorizontalAlignment="Center"
-                       RenderOptions.BitmapScalingMode="HighQuality" />
+                <Image Source="pack://application:,,,/Assets/lewis_logo.png" Height="90" HorizontalAlignment="Center"
+                       Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality" />
 
                 <TextBlock Text="English Speaking Coach" FontSize="15"
                            Foreground="{StaticResource Turquesa}" HorizontalAlignment="Center"
