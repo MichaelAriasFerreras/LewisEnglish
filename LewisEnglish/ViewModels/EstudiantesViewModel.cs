@@ -37,7 +37,47 @@ namespace LewisEnglish.ViewModels
         public Estudiante? Seleccionado
         {
             get => _seleccionado;
-            set => SetProperty(ref _seleccionado, value);
+            set
+            {
+                if (SetProperty(ref _seleccionado, value))
+                {
+                    CargarDetalle();
+                    OnPropertyChanged(nameof(HaySeleccion));
+                    OnPropertyChanged(nameof(TienePagosVencidos));
+                }
+            }
+        }
+
+        /// <summary>True cuando hay un estudiante seleccionado (para mostrar el panel de detalle).</summary>
+        public bool HaySeleccion => _seleccionado != null;
+
+        /// <summary>Historial de pagos del estudiante seleccionado (mas recientes primero).</summary>
+        public ObservableCollection<Pago> PagosSeleccionado { get; } = new();
+
+        /// <summary>Historial de asistencias del estudiante seleccionado (mas recientes primero).</summary>
+        public ObservableCollection<Asistencia> AsistenciasSeleccionado { get; } = new();
+
+        /// <summary>True si el estudiante seleccionado tiene pagos vencidos.</summary>
+        public bool TienePagosVencidos
+        {
+            get
+            {
+                foreach (var p in PagosSeleccionado)
+                    if (p.Estado == EstadoPago.Vencido) return true;
+                return false;
+            }
+        }
+
+        private void CargarDetalle()
+        {
+            PagosSeleccionado.Clear();
+            AsistenciasSeleccionado.Clear();
+            if (_seleccionado == null) return;
+
+            foreach (var p in _db.ObtenerPagosPorEstudiante(_seleccionado.Id))
+                PagosSeleccionado.Add(p);
+            foreach (var a in _db.ObtenerAsistenciasPorEstudiante(_seleccionado.Id))
+                AsistenciasSeleccionado.Add(a);
         }
 
         public Estudiante Editable
@@ -162,7 +202,6 @@ namespace LewisEnglish.ViewModels
         {
             Id = e.Id,
             Nombre = e.Nombre,
-            Cedula = e.Cedula,
             Telefono = e.Telefono,
             WhatsApp = e.WhatsApp,
             Direccion = e.Direccion,

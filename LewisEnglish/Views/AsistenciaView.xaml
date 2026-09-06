@@ -59,6 +59,7 @@
                                Margin="0,0,0,8" />
                     <DataGrid ItemsSource="{Binding Historial}">
                         <DataGrid.Columns>
+                            <DataGridTextColumn Header="Estudiante" Binding="{Binding EstudianteNombre}" Width="*" />
                             <DataGridTextColumn Header="Fecha" Binding="{Binding Fecha, Converter={StaticResource DateConverter}}" Width="Auto" />
                             <DataGridTemplateColumn Header="Estado" Width="Auto">
                                 <DataGridTemplateColumn.CellTemplate>

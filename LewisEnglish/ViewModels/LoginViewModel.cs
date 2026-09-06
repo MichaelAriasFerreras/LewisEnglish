@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using LewisEnglish.Models;
 using LewisEnglish.Services;
 
@@ -14,17 +15,39 @@ namespace LewisEnglish.ViewModels
         private string _email = "lewis@ingles.com";
         private string _password = string.Empty;
         private string _mensajeError = string.Empty;
+        private bool _recordarCorreo;
+
+        /// <summary>Ruta del archivo local donde se recuerda el correo (%AppData%/LewisEnglish/login.settings).</summary>
+        private static string RutaSettings
+        {
+            get
+            {
+                var carpeta = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                    "LewisEnglish");
+                Directory.CreateDirectory(carpeta);
+                return Path.Combine(carpeta, "login.settings");
+            }
+        }
 
         public LoginViewModel(DatabaseService db)
         {
             _db = db;
             IngresarCommand = new RelayCommand(Ingresar);
+            CargarCorreoRecordado();
         }
 
         public string Email
         {
             get => _email;
             set => SetProperty(ref _email, value);
+        }
+
+        /// <summary>Cuando esta marcado, el correo se guarda localmente y se precarga al abrir.</summary>
+        public bool RecordarCorreo
+        {
+            get => _recordarCorreo;
+            set => SetProperty(ref _recordarCorreo, value);
         }
 
         public string Password
@@ -63,7 +86,37 @@ namespace LewisEnglish.ViewModels
             }
 
             MensajeError = string.Empty;
+            GuardarCorreoRecordado();
             LoginExitoso?.Invoke(admin);
+        }
+
+        private void CargarCorreoRecordado()
+        {
+            try
+            {
+                if (File.Exists(RutaSettings))
+                {
+                    var correo = File.ReadAllText(RutaSettings).Trim();
+                    if (!string.IsNullOrWhiteSpace(correo))
+                    {
+                        Email = correo;
+                        RecordarCorreo = true;
+                    }
+                }
+            }
+            catch { /* si falla la lectura, se usa el correo por defecto */ }
+        }
+
+        private void GuardarCorreoRecordado()
+        {
+            try
+            {
+                if (RecordarCorreo)
+                    File.WriteAllText(RutaSettings, Email.Trim());
+                else if (File.Exists(RutaSettings))
+                    File.Delete(RutaSettings);
+            }
+            catch { /* no bloquear el login si falla el guardado */ }
         }
     }
 }

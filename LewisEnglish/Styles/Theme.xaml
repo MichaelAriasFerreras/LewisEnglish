@@ -12,19 +12,19 @@
     <conv:SeccionActivaConverter x:Key="SeccionActivaConverter" />
 
     <!-- ===================== Paleta de colores (Lewis) ===================== -->
-    <SolidColorBrush x:Key="FondoPrincipal" Color="#0E1F2E" />
-    <SolidColorBrush x:Key="FondoPanel" Color="#16324A" />
-    <SolidColorBrush x:Key="FondoTarjeta" Color="#1B3A54" />
-    <SolidColorBrush x:Key="FondoSidebar" Color="#12293B" />
-    <SolidColorBrush x:Key="Navy" Color="#1A3A52" />
+    <SolidColorBrush x:Key="FondoPrincipal" Color="#0A1C2E" />
+    <SolidColorBrush x:Key="FondoPanel" Color="#1A3A52" />
+    <SolidColorBrush x:Key="FondoTarjeta" Color="#1A3A52" />
+    <SolidColorBrush x:Key="FondoSidebar" Color="#0C2340" />
+    <SolidColorBrush x:Key="Navy" Color="#0C2340" />
     <SolidColorBrush x:Key="AzulAccento" Color="#00A9A5" />
     <SolidColorBrush x:Key="AzulClaro" Color="#12C4BF" />
     <SolidColorBrush x:Key="Turquesa" Color="#00A9A5" />
-    <SolidColorBrush x:Key="Verde" Color="#22C55E" />
-    <SolidColorBrush x:Key="Rojo" Color="#EF4444" />
-    <SolidColorBrush x:Key="Naranja" Color="#F59E0B" />
-    <SolidColorBrush x:Key="TextoPrincipal" Color="#F1F5F9" />
-    <SolidColorBrush x:Key="TextoSecundario" Color="#9FB3C8" />
+    <SolidColorBrush x:Key="Verde" Color="#16A34A" />
+    <SolidColorBrush x:Key="Rojo" Color="#E53E3E" />
+    <SolidColorBrush x:Key="Naranja" Color="#F5A623" />
+    <SolidColorBrush x:Key="TextoPrincipal" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="TextoSecundario" Color="#8FB0C4" />
     <SolidColorBrush x:Key="BordeSuave" Color="#2C5070" />
 
     <!-- ===================== Texto ===================== -->
@@ -325,6 +325,9 @@
         <Setter Property="ColumnHeaderHeight" Value="40" />
         <Setter Property="SelectionMode" Value="Single" />
         <Setter Property="SelectionUnit" Value="FullRow" />
+        <Setter Property="HorizontalScrollBarVisibility" Value="Disabled" />
+        <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
+        <Setter Property="ColumnWidth" Value="Auto" />
     </Style>
 
     <Style TargetType="DataGridColumnHeader">

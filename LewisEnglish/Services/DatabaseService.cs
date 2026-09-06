@@ -66,7 +66,6 @@ namespace LewisEnglish.Services
                 @"CREATE TABLE IF NOT EXISTS ""Estudiantes"" (
                     ""Id"" INTEGER NOT NULL CONSTRAINT ""PK_Estudiantes"" PRIMARY KEY AUTOINCREMENT,
                     ""Nombre"" TEXT NOT NULL,
-                    ""Cedula"" TEXT NOT NULL,
                     ""Telefono"" TEXT NOT NULL,
                     ""WhatsApp"" TEXT NOT NULL,
                     ""Direccion"" TEXT NOT NULL,
@@ -115,7 +114,6 @@ namespace LewisEnglish.Services
                     ""EstudianteId"" INTEGER NOT NULL,
                     ""NumeroFactura"" TEXT NOT NULL,
                     ""EstudianteNombre"" TEXT NOT NULL,
-                    ""Cedula"" TEXT NOT NULL,
                     ""Periodo"" TEXT NOT NULL,
                     ""Frecuencia"" INTEGER NOT NULL,
                     ""Monto"" decimal(18,2) NOT NULL,
@@ -193,7 +191,6 @@ namespace LewisEnglish.Services
                 if (existente != null)
                 {
                     existente.Nombre = estudiante.Nombre;
-                    existente.Cedula = estudiante.Cedula;
                     existente.Telefono = estudiante.Telefono;
                     existente.WhatsApp = estudiante.WhatsApp;
                     existente.Direccion = estudiante.Direccion;
@@ -386,16 +383,12 @@ namespace LewisEnglish.Services
 
         private Factura CrearFacturaInterna(AppDbContext db, Pago pago)
         {
-            var est = db.Estudiantes.Find(pago.EstudianteId);
-            string cedula = est?.Cedula ?? string.Empty;
-
             var factura = new Factura
             {
                 PagoId = pago.Id,
                 EstudianteId = pago.EstudianteId,
                 NumeroFactura = $"FAC-{DateTime.Now:yyyyMMdd}-{pago.Id:D4}",
                 EstudianteNombre = pago.EstudianteNombre,
-                Cedula = cedula,
                 Periodo = pago.Etiqueta,
                 Frecuencia = pago.Frecuencia,
                 Monto = pago.Monto,

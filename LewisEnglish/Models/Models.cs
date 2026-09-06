@@ -85,7 +85,6 @@ namespace LewisEnglish.Models
     {
         public int Id { get; set; }
         public string Nombre { get; set; } = string.Empty;
-        public string Cedula { get; set; } = string.Empty;
         public string Telefono { get; set; } = string.Empty;
         public string WhatsApp { get; set; } = string.Empty;
         public string Direccion { get; set; } = string.Empty;
@@ -222,7 +221,6 @@ namespace LewisEnglish.Models
 
         public string NumeroFactura { get; set; } = string.Empty;
         public string EstudianteNombre { get; set; } = string.Empty;
-        public string Cedula { get; set; } = string.Empty;
 
         public string Periodo { get; set; } = string.Empty;
         public FrecuenciaPago Frecuencia { get; set; }

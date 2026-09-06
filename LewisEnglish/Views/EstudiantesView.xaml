@@ -50,58 +50,53 @@
                         <TextBox Text="{Binding Editable.Nombre, UpdateSourceTrigger=PropertyChanged}" />
                     </StackPanel>
                     <StackPanel Grid.Row="0" Grid.Column="1" Margin="0,0,10,8">
-                        <TextBlock Text="Cedula" Style="{StaticResource EtiquetaCampo}" />
-                        <TextBox Text="{Binding Editable.Cedula, UpdateSourceTrigger=PropertyChanged}" />
-                    </StackPanel>
-                    <StackPanel Grid.Row="0" Grid.Column="2" Margin="0,0,0,8">
-                        <TextBlock Text="Email" Style="{StaticResource EtiquetaCampo}" />
-                        <TextBox Text="{Binding Editable.Email, UpdateSourceTrigger=PropertyChanged}" />
-                    </StackPanel>
-
-                    <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,10,8">
                         <TextBlock Text="Telefono" Style="{StaticResource EtiquetaCampo}" />
                         <TextBox Text="{Binding Editable.Telefono, UpdateSourceTrigger=PropertyChanged}" />
                     </StackPanel>
-                    <StackPanel Grid.Row="1" Grid.Column="1" Margin="0,0,10,8">
+                    <StackPanel Grid.Row="0" Grid.Column="2" Margin="0,0,0,8">
                         <TextBlock Text="WhatsApp" Style="{StaticResource EtiquetaCampo}" />
                         <TextBox Text="{Binding Editable.WhatsApp, UpdateSourceTrigger=PropertyChanged}" />
                     </StackPanel>
-                    <StackPanel Grid.Row="1" Grid.Column="2" Margin="0,0,0,8">
+
+                    <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,10,8">
+                        <TextBlock Text="Email" Style="{StaticResource EtiquetaCampo}" />
+                        <TextBox Text="{Binding Editable.Email, UpdateSourceTrigger=PropertyChanged}" />
+                    </StackPanel>
+                    <StackPanel Grid.Row="1" Grid.Column="1" Margin="0,0,10,8">
                         <TextBlock Text="Direccion" Style="{StaticResource EtiquetaCampo}" />
                         <TextBox Text="{Binding Editable.Direccion, UpdateSourceTrigger=PropertyChanged}" />
                     </StackPanel>
-
-                    <StackPanel Grid.Row="2" Grid.Column="0" Margin="0,0,10,8">
+                    <StackPanel Grid.Row="1" Grid.Column="2" Margin="0,0,0,8">
                         <TextBlock Text="Dia de clase" Style="{StaticResource EtiquetaCampo}" />
                         <ComboBox ItemsSource="{Binding DiasSemana}" SelectedItem="{Binding Editable.DiaClase}" />
                     </StackPanel>
-                    <StackPanel Grid.Row="2" Grid.Column="1" Margin="0,0,10,8">
+
+                    <StackPanel Grid.Row="2" Grid.Column="0" Margin="0,0,10,8">
                         <TextBlock Text="Hora de inicio (clase de 2 horas)" Style="{StaticResource EtiquetaCampo}" />
                         <ComboBox ItemsSource="{Binding Franjas}" SelectedItem="{Binding Editable.HoraInicio}" />
                     </StackPanel>
-                    <StackPanel Grid.Row="2" Grid.Column="2" Margin="0,0,0,8">
+                    <StackPanel Grid.Row="2" Grid.Column="1" Margin="0,0,10,8">
                         <TextBlock Text="Frecuencia de pago" Style="{StaticResource EtiquetaCampo}" />
                         <ComboBox ItemsSource="{Binding Frecuencias}" SelectedItem="{Binding Editable.Frecuencia}" />
                     </StackPanel>
-
-                    <StackPanel Grid.Row="3" Grid.Column="0" Margin="0,0,10,0">
+                    <StackPanel Grid.Row="2" Grid.Column="2" Margin="0,0,0,8">
                         <TextBlock Text="Tarifa (RD$)" Style="{StaticResource EtiquetaCampo}" />
                         <TextBox Text="{Binding Editable.Tarifa, UpdateSourceTrigger=PropertyChanged}" />
                     </StackPanel>
-                    <StackPanel Grid.Row="3" Grid.Column="1" Margin="0,0,10,0">
+
+                    <StackPanel Grid.Row="3" Grid.Column="0" Margin="0,0,10,0">
                         <TextBlock Text="Forma de pago" Style="{StaticResource EtiquetaCampo}" />
                         <ComboBox ItemsSource="{Binding FormasPago}" SelectedItem="{Binding Editable.FormaPago}" />
                     </StackPanel>
-                    <StackPanel Grid.Row="3" Grid.Column="2" Margin="0,0,0,0">
+                    <StackPanel Grid.Row="3" Grid.Column="1" Margin="0,0,10,0">
                         <TextBlock Text="Banco (si es transferencia)" Style="{StaticResource EtiquetaCampo}" />
                         <ComboBox ItemsSource="{Binding Bancos}" SelectedItem="{Binding Editable.Banco}" IsEditable="True" />
                     </StackPanel>
+                    <StackPanel Grid.Row="3" Grid.Column="2" Margin="0,0,0,0">
+                        <TextBlock Text="Estado" Style="{StaticResource EtiquetaCampo}" />
+                        <ComboBox ItemsSource="{Binding Estados}" SelectedItem="{Binding Editable.Estado}" />
+                    </StackPanel>
                 </Grid>
-
-                <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
-                    <TextBlock Text="Estado" Style="{StaticResource EtiquetaCampo}" VerticalAlignment="Center" Margin="0,0,8,0" />
-                    <ComboBox ItemsSource="{Binding Estados}" SelectedItem="{Binding Editable.Estado}" Width="160" />
-                </StackPanel>
 
                 <StackPanel Orientation="Horizontal" Margin="0,14,0,0">
                     <Button Content="Guardar" Style="{StaticResource BotonExito}"
@@ -112,38 +107,167 @@
             </StackPanel>
         </Border>
 
-        <!-- Tabla -->
-        <Border Grid.Row="2" Style="{StaticResource Tarjeta}" Margin="0,14,0,0">
-            <DataGrid ItemsSource="{Binding Estudiantes}" SelectedItem="{Binding Seleccionado}">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Nombre" Binding="{Binding Nombre}" Width="*" />
-                    <DataGridTextColumn Header="Cedula" Binding="{Binding Cedula}" Width="Auto" />
-                    <DataGridTextColumn Header="Telefono" Binding="{Binding Telefono}" Width="Auto" />
-                    <DataGridTextColumn Header="Dia" Binding="{Binding DiaClaseTexto}" Width="Auto" />
-                    <DataGridTextColumn Header="Horario" Binding="{Binding RangoHorario}" Width="Auto" />
-                    <DataGridTextColumn Header="Frecuencia" Binding="{Binding FrecuenciaTexto}" Width="Auto" />
-                    <DataGridTextColumn Header="Tarifa" Binding="{Binding Tarifa, Converter={StaticResource CurrencyConverter}}" Width="Auto" />
-                    <DataGridTemplateColumn Header="Estado" Width="Auto">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding EstadoTexto}" FontWeight="SemiBold"
-                                           VerticalAlignment="Center"
-                                           Foreground="{Binding Estado, Converter={StaticResource EstadoEstudianteColorConverter}}" />
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="WhatsApp" Width="Auto">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <Button Content="Mensaje" Style="{StaticResource BotonExito}"
-                                        Padding="10,4" FontSize="12"
-                                        Command="{Binding DataContext.WhatsAppCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                        CommandParameter="{Binding}" />
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                </DataGrid.Columns>
-            </DataGrid>
-        </Border>
+        <!-- Tabla + Panel de detalle -->
+        <Grid Grid.Row="2" Margin="0,14,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Tabla de estudiantes -->
+            <Border Grid.Column="0" Style="{StaticResource Tarjeta}">
+                <DataGrid ItemsSource="{Binding Estudiantes}" SelectedItem="{Binding Seleccionado}"
+                          HorizontalScrollBarVisibility="Disabled">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Nombre" Binding="{Binding Nombre}" Width="*" />
+                        <DataGridTextColumn Header="Telefono" Binding="{Binding Telefono}" Width="Auto" />
+                        <DataGridTextColumn Header="Dia" Binding="{Binding DiaClaseTexto}" Width="Auto" />
+                        <DataGridTextColumn Header="Horario" Binding="{Binding RangoHorario}" Width="Auto" />
+                        <DataGridTextColumn Header="Frecuencia" Binding="{Binding FrecuenciaTexto}" Width="Auto" />
+                        <DataGridTextColumn Header="Tarifa" Binding="{Binding Tarifa, Converter={StaticResource CurrencyConverter}}" Width="Auto" />
+                        <DataGridTemplateColumn Header="Estado" Width="Auto">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding EstadoTexto}" FontWeight="SemiBold"
+                                               VerticalAlignment="Center"
+                                               Foreground="{Binding Estado, Converter={StaticResource EstadoEstudianteColorConverter}}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="WhatsApp" Width="Auto">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Content="Mensaje" Style="{StaticResource BotonExito}"
+                                            Padding="10,4" FontSize="12"
+                                            Command="{Binding DataContext.WhatsAppCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                            CommandParameter="{Binding}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Border>
+
+            <!-- Panel de detalle del estudiante seleccionado -->
+            <Border Grid.Column="1" Style="{StaticResource Tarjeta}" Width="420" Margin="14,0,0,0"
+                    Background="{StaticResource FondoPanel}"
+                    Visibility="{Binding HaySeleccion, Converter={StaticResource BoolToVisibilityConverter}}">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel>
+                        <!-- Nombre prominente -->
+                        <TextBlock Text="{Binding Seleccionado.Nombre}" FontSize="22" FontWeight="Bold"
+                                   Foreground="{StaticResource TextoPrincipal}" TextWrapping="Wrap" />
+                        <TextBlock Text="{Binding Seleccionado.EstadoTexto}" FontSize="13" FontWeight="SemiBold"
+                                   Foreground="{Binding Seleccionado.Estado, Converter={StaticResource EstadoEstudianteColorConverter}}"
+                                   Margin="0,2,0,0" />
+
+                        <!-- Aviso de pagos vencidos -->
+                        <Border Background="{StaticResource Naranja}" CornerRadius="8" Padding="10,6" Margin="0,12,0,0"
+                                Visibility="{Binding TienePagosVencidos, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <TextBlock Text="Tiene pagos vencidos" Foreground="White" FontWeight="SemiBold" FontSize="12" />
+                        </Border>
+
+                        <Button Content="Enviar recordatorio por WhatsApp" Style="{StaticResource BotonExito}"
+                                HorizontalAlignment="Stretch" Margin="0,12,0,0"
+                                Command="{Binding WhatsAppCommand}"
+                                CommandParameter="{Binding Seleccionado}" />
+
+                        <!-- Informacion de contacto y plan -->
+                        <TextBlock Text="Informacion" FontSize="14" FontWeight="SemiBold"
+                                   Foreground="{StaticResource Turquesa}" Margin="0,18,0,6" />
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Telefono:" Foreground="{StaticResource TextoSecundario}" Margin="0,3,10,3" />
+                            <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Seleccionado.Telefono}" Foreground="{StaticResource TextoPrincipal}" Margin="0,3" TextWrapping="Wrap" />
+
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="WhatsApp:" Foreground="{StaticResource TextoSecundario}" Margin="0,3,10,3" />
+                            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Seleccionado.WhatsApp}" Foreground="{StaticResource TextoPrincipal}" Margin="0,3" TextWrapping="Wrap" />
+
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Email:" Foreground="{StaticResource TextoSecundario}" Margin="0,3,10,3" />
+                            <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Seleccionado.Email}" Foreground="{StaticResource TextoPrincipal}" Margin="0,3" TextWrapping="Wrap" />
+
+                            <TextBlock Grid.Row="3" Grid.Column="0" Text="Dia:" Foreground="{StaticResource TextoSecundario}" Margin="0,3,10,3" />
+                            <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Seleccionado.DiaClaseTexto}" Foreground="{StaticResource TextoPrincipal}" Margin="0,3" />
+
+                            <TextBlock Grid.Row="4" Grid.Column="0" Text="Horario:" Foreground="{StaticResource TextoSecundario}" Margin="0,3,10,3" />
+                            <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding Seleccionado.RangoHorario}" Foreground="{StaticResource TextoPrincipal}" Margin="0,3" />
+
+                            <TextBlock Grid.Row="5" Grid.Column="0" Text="Frecuencia:" Foreground="{StaticResource TextoSecundario}" Margin="0,3,10,3" />
+                            <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding Seleccionado.FrecuenciaTexto}" Foreground="{StaticResource TextoPrincipal}" Margin="0,3" />
+
+                            <TextBlock Grid.Row="6" Grid.Column="0" Text="Tarifa:" Foreground="{StaticResource TextoSecundario}" Margin="0,3,10,3" />
+                            <TextBlock Grid.Row="6" Grid.Column="1" Text="{Binding Seleccionado.Tarifa, Converter={StaticResource CurrencyConverter}}" Foreground="{StaticResource TextoPrincipal}" FontWeight="SemiBold" Margin="0,3" />
+
+                            <TextBlock Grid.Row="7" Grid.Column="0" Text="Pago:" Foreground="{StaticResource TextoSecundario}" Margin="0,3,10,3" />
+                            <TextBlock Grid.Row="7" Grid.Column="1" Text="{Binding Seleccionado.FormaPagoTexto}" Foreground="{StaticResource TextoPrincipal}" Margin="0,3" TextWrapping="Wrap" />
+                        </Grid>
+
+                        <!-- Historial de pagos -->
+                        <TextBlock Text="Historial de pagos" FontSize="14" FontWeight="SemiBold"
+                                   Foreground="{StaticResource Turquesa}" Margin="0,18,0,6" />
+                        <ItemsControl ItemsSource="{Binding PagosSeleccionado}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Background="{StaticResource FondoPrincipal}" CornerRadius="8" Padding="10,7" Margin="0,0,0,6">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Grid.Column="0">
+                                                <TextBlock Text="{Binding Etiqueta}" Foreground="{StaticResource TextoPrincipal}" FontSize="12" TextWrapping="Wrap" />
+                                                <TextBlock Text="{Binding Monto, Converter={StaticResource CurrencyConverter}}" Foreground="{StaticResource TextoSecundario}" FontSize="12" />
+                                            </StackPanel>
+                                            <TextBlock Grid.Column="1" Text="{Binding EstadoTexto}" FontWeight="SemiBold" FontSize="12"
+                                                       VerticalAlignment="Center"
+                                                       Foreground="{Binding Estado, Converter={StaticResource EstadoPagoColorConverter}}" />
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <!-- Historial de asistencia -->
+                        <TextBlock Text="Historial de asistencia" FontSize="14" FontWeight="SemiBold"
+                                   Foreground="{StaticResource Turquesa}" Margin="0,14,0,6" />
+                        <ItemsControl ItemsSource="{Binding AsistenciasSeleccionado}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Background="{StaticResource FondoPrincipal}" CornerRadius="8" Padding="10,7" Margin="0,0,0,6">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Grid.Column="0">
+                                                <TextBlock Text="{Binding Fecha, Converter={StaticResource DateConverter}}" Foreground="{StaticResource TextoPrincipal}" FontSize="12" />
+                                                <TextBlock Text="{Binding Nota}" Foreground="{StaticResource TextoSecundario}" FontSize="11" TextWrapping="Wrap" />
+                                            </StackPanel>
+                                            <TextBlock Grid.Column="1" Text="{Binding EstadoTexto}" FontWeight="SemiBold" FontSize="12"
+                                                       VerticalAlignment="Center"
+                                                       Foreground="{Binding Estado, Converter={StaticResource EstadoAsistenciaColorConverter}}" />
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+        </Grid>
     </Grid>
 </UserControl>

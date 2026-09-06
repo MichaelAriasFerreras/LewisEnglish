@@ -2,7 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Lewis, English Speaking Coach - Iniciar Sesion"
-        Height="620" Width="440"
+        Height="670" Width="440"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
         WindowStyle="None"
@@ -39,6 +39,11 @@
 
                 <TextBlock Text="Contrasena" Style="{StaticResource EtiquetaCampo}" />
                 <PasswordBox x:Name="PasswordBox" KeyDown="PasswordBox_KeyDown" />
+
+                <CheckBox Content="Recordar correo"
+                          IsChecked="{Binding RecordarCorreo, Mode=TwoWay}"
+                          Foreground="{StaticResource TextoSecundario}"
+                          FontSize="12" Margin="2,14,0,0" VerticalContentAlignment="Center" />
 
                 <TextBlock Text="{Binding MensajeError}" Foreground="{StaticResource Rojo}"
                            FontSize="12" Margin="2,10,0,0" TextWrapping="Wrap" />

@@ -111,8 +111,6 @@ namespace LewisEnglish.Helpers
                             {
                                 c.Item().Text("Facturado a").Bold().FontColor(Navy);
                                 c.Item().Text(factura.EstudianteNombre).FontSize(12).Bold();
-                                if (!string.IsNullOrWhiteSpace(factura.Cedula))
-                                    c.Item().Text($"Cedula: {factura.Cedula}");
                             });
                             r.ConstantItem(170).AlignRight().Column(c =>
                             {

@@ -3,11 +3,12 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:LewisEnglish.ViewModels"
         xmlns:views="clr-namespace:LewisEnglish.Views"
-        Title="Lewis, English Speaking Coach" Height="780" Width="1240"
+        Title="Lewis, English Speaking Coach" Height="900" Width="1400"
         WindowStartupLocation="CenterScreen"
+        WindowState="Maximized"
         Background="{StaticResource FondoPrincipal}"
         Icon="/Assets/appicon.ico"
-        MinHeight="640" MinWidth="1040">
+        MinHeight="720" MinWidth="1180">
 
     <Window.Resources>
         <DataTemplate DataType="{x:Type vm:DashboardViewModel}">
