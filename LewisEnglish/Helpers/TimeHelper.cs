@@ -16,11 +16,11 @@ namespace LewisEnglish.Helpers
         /// Calcula la hora de fin sumando 2 horas a la hora de inicio.
         /// Devuelve cadena vacia si no se puede interpretar.
         /// </summary>
-        public static string CalcularHoraFin(string horaInicio)
+        public static string CalcularHoraFin(string horaInicio, double duracionHoras = 2)
         {
             if (TryParse(horaInicio, out var inicio))
             {
-                var fin = inicio.AddHours(2);
+                var fin = inicio.AddHours(duracionHoras);
                 return fin.ToString("h:mm tt", Cultura);
             }
             return string.Empty;

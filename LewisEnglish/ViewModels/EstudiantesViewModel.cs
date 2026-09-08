@@ -104,6 +104,7 @@ namespace LewisEnglish.ViewModels
         public Array FormasPago => Enum.GetValues(typeof(FormaPago));
         public Array Estados => Enum.GetValues(typeof(EstadoEstudiante));
         public List<string> Franjas => TimeHelper.FranjasHorarias();
+        public List<double> Duraciones => new() { 0.5, 1, 1.5, 2, 2.5, 3 };
         public List<string> Bancos => new()
         {
             "Banreservas", "Banco Popular", "BHD Leon", "Scotiabank",

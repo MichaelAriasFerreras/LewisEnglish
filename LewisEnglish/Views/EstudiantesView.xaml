@@ -72,29 +72,29 @@
                     </StackPanel>
 
                     <StackPanel Grid.Row="2" Grid.Column="0" Margin="0,0,10,8">
-                        <TextBlock Text="Hora de inicio (clase de 2 horas)" Style="{StaticResource EtiquetaCampo}" />
+                        <TextBlock Text="Hora de inicio" Style="{StaticResource EtiquetaCampo}" />
                         <ComboBox ItemsSource="{Binding Franjas}" SelectedItem="{Binding Editable.HoraInicio}" />
                     </StackPanel>
                     <StackPanel Grid.Row="2" Grid.Column="1" Margin="0,0,10,8">
+                        <TextBlock Text="Duracion (horas)" Style="{StaticResource EtiquetaCampo}" />
+                        <ComboBox ItemsSource="{Binding Duraciones}" SelectedItem="{Binding Editable.DuracionHoras}" />
+                    </StackPanel>
+                    <StackPanel Grid.Row="2" Grid.Column="2" Margin="0,0,0,8">
                         <TextBlock Text="Frecuencia de pago" Style="{StaticResource EtiquetaCampo}" />
                         <ComboBox ItemsSource="{Binding Frecuencias}" SelectedItem="{Binding Editable.Frecuencia}" />
                     </StackPanel>
-                    <StackPanel Grid.Row="2" Grid.Column="2" Margin="0,0,0,8">
+
+                    <StackPanel Grid.Row="3" Grid.Column="0" Margin="0,0,10,0">
                         <TextBlock Text="Tarifa (RD$)" Style="{StaticResource EtiquetaCampo}" />
                         <TextBox Text="{Binding Editable.Tarifa, UpdateSourceTrigger=PropertyChanged}" />
                     </StackPanel>
-
-                    <StackPanel Grid.Row="3" Grid.Column="0" Margin="0,0,10,0">
+                    <StackPanel Grid.Row="3" Grid.Column="1" Margin="0,0,10,0">
                         <TextBlock Text="Forma de pago" Style="{StaticResource EtiquetaCampo}" />
                         <ComboBox ItemsSource="{Binding FormasPago}" SelectedItem="{Binding Editable.FormaPago}" />
                     </StackPanel>
-                    <StackPanel Grid.Row="3" Grid.Column="1" Margin="0,0,10,0">
+                    <StackPanel Grid.Row="3" Grid.Column="2" Margin="0,0,0,0">
                         <TextBlock Text="Banco (si es transferencia)" Style="{StaticResource EtiquetaCampo}" />
                         <ComboBox ItemsSource="{Binding Bancos}" SelectedItem="{Binding Editable.Banco}" />
-                    </StackPanel>
-                    <StackPanel Grid.Row="3" Grid.Column="2" Margin="0,0,0,0">
-                        <TextBlock Text="Estado" Style="{StaticResource EtiquetaCampo}" />
-                        <ComboBox ItemsSource="{Binding Estados}" SelectedItem="{Binding Editable.Estado}" />
                     </StackPanel>
                 </Grid>
 

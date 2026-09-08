@@ -1,5 +1,5 @@
 {
-  "version": "1.2.0",
-  "url": "https://github.com/MichaelAriasFerreras/LewisEnglish/releases/download/v1.2.0/LewisEnglish-app.zip",
-  "notes": "v1.2.0 - Logo corregido en login y menu, seleccion de banco de lista fija, marca de agua de factura mas suave y mejoras generales"
+  "version": "1.3.0",
+  "url": "https://github.com/MichaelAriasFerreras/LewisEnglish/releases/download/v1.3.0/LewisEnglish-app.zip",
+  "notes": "v1.3.0 - Duracion de clase personalizable por estudiante (0.5h a 3h), valor por defecto 2 horas, migracion automatica de bases de datos existentes"
 }

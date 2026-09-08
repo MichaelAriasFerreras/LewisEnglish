@@ -96,6 +96,9 @@ namespace LewisEnglish.Models
         /// <summary>Hora de inicio de la clase, formato "h:mm tt" (ej. "8:00 AM").</summary>
         public string HoraInicio { get; set; } = "8:00 AM";
 
+        /// <summary>Duracion de la clase en horas (1, 1.5, 2, etc.). Por defecto 2.</summary>
+        public double DuracionHoras { get; set; } = 2;
+
         public FrecuenciaPago Frecuencia { get; set; } = FrecuenciaPago.Semanal;
 
         /// <summary>Tarifa personalizada por periodo de pago.</summary>
@@ -115,12 +118,12 @@ namespace LewisEnglish.Models
 
         // --------- Propiedades calculadas (no persistidas) ---------
 
-        /// <summary>Hora de fin = hora de inicio + 2 horas.</summary>
-        public string HoraFin => TimeHelper.CalcularHoraFin(HoraInicio);
+        /// <summary>Hora de fin = hora de inicio + duracion personalizada.</summary>
+        public string HoraFin => TimeHelper.CalcularHoraFin(HoraInicio, DuracionHoras);
 
-        /// <summary>Rango horario completo, ej. "8:00 AM - 10:00 AM".</summary>
+        /// <summary>Rango horario completo, ej. "8:00 AM - 10:00 AM (2h)".</summary>
         public string RangoHorario => string.IsNullOrWhiteSpace(HoraInicio)
-            ? "-" : $"{HoraInicio} - {HoraFin}";
+            ? "-" : $"{HoraInicio} - {HoraFin} ({DuracionHoras}h)";
 
         public string DiaClaseTexto => DiaClase.ToString();
 

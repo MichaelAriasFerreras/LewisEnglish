@@ -77,8 +77,12 @@ namespace LewisEnglish.Services
                     ""FormaPago"" INTEGER NOT NULL,
                     ""Banco"" TEXT NOT NULL,
                     ""Estado"" INTEGER NOT NULL,
-                    ""FechaRegistro"" TEXT NOT NULL
+                    ""FechaRegistro"" TEXT NOT NULL,
+                    ""DuracionHoras"" REAL NOT NULL DEFAULT 2.0
                 );");
+
+            // Migracion: agregar columna DuracionHoras a bases de datos existentes
+            EjecutarSqlSilencioso(db, @"ALTER TABLE ""Estudiantes"" ADD COLUMN ""DuracionHoras"" REAL NOT NULL DEFAULT 2.0");
 
             db.Database.ExecuteSqlRaw(
                 @"CREATE TABLE IF NOT EXISTS ""Asistencias"" (
