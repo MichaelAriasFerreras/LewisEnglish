@@ -40,7 +40,18 @@
                     </StackPanel>
                     <StackPanel Margin="0,0,14,0">
                         <TextBlock Text="Banco (si es transferencia)" Style="{StaticResource EtiquetaCampo}" />
-                        <ComboBox Width="200" ItemsSource="{Binding Bancos}" SelectedItem="{Binding Banco}" />
+                        <ComboBox Width="200" ItemsSource="{Binding Bancos}" SelectedItem="{Binding Banco}">
+                            <ComboBox.Style>
+                                <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
+                                    <Setter Property="IsEnabled" Value="False" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding FormaPago}" Value="Transferencia">
+                                            <Setter Property="IsEnabled" Value="True" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ComboBox.Style>
+                        </ComboBox>
                     </StackPanel>
                     <StackPanel Margin="0,0,14,0">
                         <TextBlock Text="Fecha de pago" Style="{StaticResource EtiquetaCampo}" />

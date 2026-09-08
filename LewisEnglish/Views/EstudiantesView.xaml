@@ -94,7 +94,18 @@
                     </StackPanel>
                     <StackPanel Grid.Row="3" Grid.Column="2" Margin="0,0,0,0">
                         <TextBlock Text="Banco (si es transferencia)" Style="{StaticResource EtiquetaCampo}" />
-                        <ComboBox ItemsSource="{Binding Bancos}" SelectedItem="{Binding Editable.Banco}" />
+                        <ComboBox ItemsSource="{Binding Bancos}" SelectedItem="{Binding Editable.Banco}">
+                            <ComboBox.Style>
+                                <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
+                                    <Setter Property="IsEnabled" Value="False" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Editable.FormaPago}" Value="Transferencia">
+                                            <Setter Property="IsEnabled" Value="True" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ComboBox.Style>
+                        </ComboBox>
                     </StackPanel>
                 </Grid>
 

@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
+using Microsoft.Win32;
 
 namespace LewisEnglishLauncher
 {
@@ -147,6 +148,103 @@ namespace LewisEnglishLauncher
             catch (Exception ex)
             {
                 MessageBox.Show("No se pudo abrir la aplicacion: " + ex.Message,
+                    "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        // =================== RESPALDO DE BASE DE DATOS ===================
+
+        /// <summary>Ruta de la base de datos de la aplicacion (%AppData%\LewisEnglish\lewis.db).</summary>
+        private static string RutaBaseDatos => Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+            "LewisEnglish", "lewis.db");
+
+        private void BtnGuardarBD_Click(object sender, RoutedEventArgs e)
+        {
+            string dbPath = RutaBaseDatos;
+
+            if (!File.Exists(dbPath))
+            {
+                MessageBox.Show(
+                    "No se encontro la base de datos.\n\n" +
+                    "Esto significa que la aplicacion no se ha ejecutado todavia o no tiene datos guardados.\n\n" +
+                    "Ruta esperada: " + dbPath,
+                    "Base de datos no encontrada",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            var dlg = new SaveFileDialog
+            {
+                Title = "Guardar copia de la base de datos",
+                FileName = $"LewisEnglish_respaldo_{DateTime.Now:yyyyMMdd_HHmmss}.db",
+                Filter = "Base de datos SQLite (*.db)|*.db|Todos los archivos (*.*)|*.*",
+                DefaultExt = ".db"
+            };
+
+            if (dlg.ShowDialog() == true)
+            {
+                try
+                {
+                    File.Copy(dbPath, dlg.FileName, overwrite: true);
+                    MessageBox.Show(
+                        "Respaldo guardado exitosamente en:\n" + dlg.FileName,
+                        "Respaldo completado",
+                        MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(
+                        "No se pudo guardar el respaldo: " + ex.Message,
+                        "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+
+        private void BtnRestaurarBD_Click(object sender, RoutedEventArgs e)
+        {
+            var dlg = new OpenFileDialog
+            {
+                Title = "Seleccionar respaldo de base de datos",
+                Filter = "Base de datos SQLite (*.db)|*.db|Todos los archivos (*.*)|*.*",
+                DefaultExt = ".db"
+            };
+
+            if (dlg.ShowDialog() != true)
+                return;
+
+            var confirmar = MessageBox.Show(
+                "¿Esta seguro que desea restaurar la base de datos?\n\n" +
+                "Esto REEMPLAZARA todos los datos actuales (estudiantes, pagos, facturas) " +
+                "con los datos del respaldo seleccionado.\n\n" +
+                "Archivo: " + Path.GetFileName(dlg.FileName) + "\n\n" +
+                "Se recomienda guardar un respaldo del estado actual antes de continuar.",
+                "Confirmar restauracion",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning,
+                MessageBoxResult.No);
+
+            if (confirmar != MessageBoxResult.Yes)
+                return;
+
+            try
+            {
+                string dbPath = RutaBaseDatos;
+                string? dir = Path.GetDirectoryName(dbPath);
+                if (!string.IsNullOrEmpty(dir))
+                    Directory.CreateDirectory(dir);
+
+                File.Copy(dlg.FileName, dbPath, overwrite: true);
+                MessageBox.Show(
+                    "Base de datos restaurada exitosamente.\n\n" +
+                    "La proxima vez que abra la aplicacion, vera los datos del respaldo.",
+                    "Restauracion completada",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    "No se pudo restaurar la base de datos: " + ex.Message,
                     "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }

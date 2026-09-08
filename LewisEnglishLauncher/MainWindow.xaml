@@ -2,7 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Lewis, English Speaking Coach - Actualizador"
-        Height="520" Width="640"
+        Height="570" Width="640"
         WindowStartupLocation="CenterScreen"
         ResizeMode="CanMinimize"
         Background="#0E2233"
@@ -98,26 +98,50 @@
             </StackPanel>
         </Border>
 
-        <!-- Botones -->
+        <!-- Botones principales -->
         <Grid Grid.Row="3" Margin="0,18,0,0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
 
-            <Button x:Name="BtnBuscar" Grid.Column="0" Content="Buscar de nuevo"
-                    Style="{StaticResource BotonGris}"
-                    Click="BtnBuscar_Click" />
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
 
-            <Button x:Name="BtnActualizar" Grid.Column="2" Content="Actualizar ahora"
-                    Style="{StaticResource BotonNaranja}" Margin="0,0,10,0"
-                    IsEnabled="False" Click="BtnActualizar_Click" />
+                <Button x:Name="BtnBuscar" Grid.Column="0" Content="Buscar de nuevo"
+                        Style="{StaticResource BotonGris}"
+                        Click="BtnBuscar_Click" />
 
-            <Button x:Name="BtnAbrir" Grid.Column="3" Content="Abrir aplicacion"
-                    Style="{StaticResource BotonExito}"
-                    Click="BtnAbrir_Click" />
+                <Button x:Name="BtnActualizar" Grid.Column="2" Content="Actualizar ahora"
+                        Style="{StaticResource BotonNaranja}" Margin="0,0,10,0"
+                        IsEnabled="False" Click="BtnActualizar_Click" />
+
+                <Button x:Name="BtnAbrir" Grid.Column="3" Content="Abrir aplicacion"
+                        Style="{StaticResource BotonExito}"
+                        Click="BtnAbrir_Click" />
+            </Grid>
+
+            <!-- Respaldo de base de datos -->
+            <Grid Grid.Row="1" Margin="0,12,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="10" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <Button x:Name="BtnGuardarBD" Grid.Column="0" Content="💾 Guardar base de datos"
+                        Style="{StaticResource Boton}"
+                        Click="BtnGuardarBD_Click" />
+
+                <Button x:Name="BtnRestaurarBD" Grid.Column="2" Content="📂 Restaurar base de datos"
+                        Style="{StaticResource Boton}"
+                        Click="BtnRestaurarBD_Click" />
+            </Grid>
         </Grid>
     </Grid>
 </Window>

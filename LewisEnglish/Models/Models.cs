@@ -81,8 +81,12 @@ namespace LewisEnglish.Models
     /// <summary>
     /// Perfil de un estudiante de ingles.
     /// </summary>
-    public class Estudiante
+    public class Estudiante : System.ComponentModel.INotifyPropertyChanged
     {
+        public event System.ComponentModel.PropertyChangedEventHandler? PropertyChanged;
+        private void Notificar([System.Runtime.CompilerServices.CallerMemberName] string? prop = null)
+            => PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(prop));
+
         public int Id { get; set; }
         public string Nombre { get; set; } = string.Empty;
         public string Telefono { get; set; } = string.Empty;
@@ -104,7 +108,12 @@ namespace LewisEnglish.Models
         /// <summary>Tarifa personalizada por periodo de pago.</summary>
         public decimal Tarifa { get; set; }
 
-        public FormaPago FormaPago { get; set; } = FormaPago.Efectivo;
+        private FormaPago _formaPago = FormaPago.Efectivo;
+        public FormaPago FormaPago
+        {
+            get => _formaPago;
+            set { _formaPago = value; Notificar(); }
+        }
 
         /// <summary>Banco (aplica cuando la forma de pago es transferencia).</summary>
         public string Banco { get; set; } = string.Empty;
