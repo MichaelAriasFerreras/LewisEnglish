@@ -31,16 +31,32 @@
         <!-- Panel de registro de pago -->
         <Border Grid.Row="1" Style="{StaticResource Tarjeta}" Margin="0,14,0,0">
             <StackPanel>
-                <TextBlock Text="Registrar pago del periodo seleccionado" FontSize="15" FontWeight="SemiBold"
-                           Foreground="{StaticResource TextoPrincipal}" Margin="0,0,0,10" />
+                <TextBlock Text="Registrar o corregir pago del periodo seleccionado" FontSize="15" FontWeight="SemiBold"
+                           Foreground="{StaticResource TextoPrincipal}" Margin="0,0,0,6" />
+
+                <!-- Periodo seleccionado, ej. "Angel  —  Semana del 1-7 Sep 2026" -->
+                <Border Background="{StaticResource Navy}" CornerRadius="6" Padding="12,8" Margin="0,0,0,12"
+                        BorderBrush="{StaticResource AzulClaro}" BorderThickness="1">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Pago de: " FontSize="13.5" VerticalAlignment="Center"
+                                   Foreground="{StaticResource TextoSecundario}" />
+                        <TextBlock Text="{Binding PeriodoSeleccionadoTexto}" FontSize="14.5" FontWeight="Bold"
+                                   VerticalAlignment="Center" Foreground="{StaticResource AzulClaro}" />
+                    </StackPanel>
+                </Border>
+
                 <StackPanel Orientation="Horizontal">
                     <StackPanel Margin="0,0,14,0">
+                        <TextBlock Text="Monto (RD$)" Style="{StaticResource EtiquetaCampo}" />
+                        <TextBox Width="130" Text="{Binding MontoEditable, StringFormat=N2, UpdateSourceTrigger=PropertyChanged}" />
+                    </StackPanel>
+                    <StackPanel Margin="0,0,14,0">
                         <TextBlock Text="Forma de pago" Style="{StaticResource EtiquetaCampo}" />
-                        <ComboBox Width="180" ItemsSource="{Binding FormasPago}" SelectedItem="{Binding FormaPago}" />
+                        <ComboBox Width="160" ItemsSource="{Binding FormasPago}" SelectedItem="{Binding FormaPago}" />
                     </StackPanel>
                     <StackPanel Margin="0,0,14,0">
                         <TextBlock Text="Banco (si es transferencia)" Style="{StaticResource EtiquetaCampo}" />
-                        <ComboBox Width="200" ItemsSource="{Binding Bancos}" SelectedItem="{Binding Banco}">
+                        <ComboBox Width="180" ItemsSource="{Binding Bancos}" SelectedItem="{Binding Banco}">
                             <ComboBox.Style>
                                 <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
                                     <Setter Property="IsEnabled" Value="False" />
@@ -58,10 +74,15 @@
                         <DatePicker Width="150" SelectedDate="{Binding FechaPago}" />
                     </StackPanel>
                     <Button Content="Registrar pago" Style="{StaticResource BotonPrimario}"
-                            VerticalAlignment="Bottom" Command="{Binding RegistrarPagoCommand}" />
+                            VerticalAlignment="Bottom" Margin="0,0,10,0" Command="{Binding RegistrarPagoCommand}" />
+                    <Button Content="Guardar cambios" Style="{StaticResource BotonExito}"
+                            VerticalAlignment="Bottom" Command="{Binding GuardarCambiosCommand}" />
                 </StackPanel>
+                <TextBlock Text="Consejo: usa &quot;Registrar pago&quot; para marcar el periodo como pagado. Usa &quot;Guardar cambios&quot; para corregir un monto, forma de pago o fecha que se puso por error."
+                           Foreground="{StaticResource TextoSecundario}" FontSize="11.5"
+                           TextWrapping="Wrap" Margin="0,10,0,0" />
                 <TextBlock Text="{Binding Mensaje}" Foreground="{StaticResource Verde}"
-                           FontSize="12.5" TextWrapping="Wrap" Margin="0,10,0,0" />
+                           FontSize="12.5" TextWrapping="Wrap" Margin="0,6,0,0" />
             </StackPanel>
         </Border>
 

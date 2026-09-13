@@ -22,11 +22,13 @@ namespace LewisEnglish.ViewModels
         private string _banco = string.Empty;
         private DateTime _fechaPago = DateTime.Today;
         private string _mensaje = string.Empty;
+        private decimal _montoEditable;
 
         public PagosViewModel(DatabaseService db)
         {
             _db = db;
             RegistrarPagoCommand = new RelayCommand(_ => RegistrarPago(), _ => Seleccionado != null && Seleccionado.Estado != EstadoPago.Pagado);
+            GuardarCambiosCommand = new RelayCommand(_ => GuardarCambios(), _ => Seleccionado != null);
             RecordatorioCommand = new RelayCommand(p => EnviarRecordatorio(p as Pago));
             RecordatoriosMasivosCommand = new RelayCommand(_ => EnviarRecordatoriosMasivos());
         }
@@ -51,11 +53,23 @@ namespace LewisEnglish.ViewModels
                 {
                     FormaPago = value.FormaPago;
                     Banco = value.Banco;
+                    MontoEditable = value.Monto;
+                    if (value.FechaPago.HasValue) FechaPago = value.FechaPago.Value;
                     OnPropertyChanged(nameof(FormaPago));
                     OnPropertyChanged(nameof(Banco));
+                    OnPropertyChanged(nameof(PeriodoSeleccionadoTexto));
+                }
+                else
+                {
+                    OnPropertyChanged(nameof(PeriodoSeleccionadoTexto));
                 }
             }
         }
+
+        /// <summary>Texto que indica el periodo seleccionado, ej. "Semana del 1-7 Sep 2026" o "Mes de Septiembre 2026".</summary>
+        public string PeriodoSeleccionadoTexto => _seleccionado == null
+            ? "Selecciona un periodo en la tabla de abajo"
+            : $"{_seleccionado.EstudianteNombre}  —  {_seleccionado.Etiqueta}";
 
         public string FiltroEstado
         {
@@ -68,7 +82,11 @@ namespace LewisEnglish.ViewModels
         public DateTime FechaPago { get => _fechaPago; set => SetProperty(ref _fechaPago, value); }
         public string Mensaje { get => _mensaje; set => SetProperty(ref _mensaje, value); }
 
+        /// <summary>Monto editable del periodo seleccionado (permite corregir un monto ingresado por error).</summary>
+        public decimal MontoEditable { get => _montoEditable; set => SetProperty(ref _montoEditable, value); }
+
         public RelayCommand RegistrarPagoCommand { get; }
+        public RelayCommand GuardarCambiosCommand { get; }
         public RelayCommand RecordatorioCommand { get; }
         public RelayCommand RecordatoriosMasivosCommand { get; }
 
@@ -106,13 +124,52 @@ namespace LewisEnglish.ViewModels
                 return;
             }
 
-            var factura = _db.RegistrarPago(Seleccionado.Id, FormaPago,
+            if (MontoEditable <= 0)
+            {
+                MessageBox.Show("El monto debe ser mayor que cero.", "Pagos",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            var factura = _db.RegistrarPagoConMonto(Seleccionado.Id, MontoEditable, FormaPago,
                 FormaPago == FormaPago.Transferencia ? Banco : string.Empty, FechaPago);
 
             Mensaje = factura != null
-                ? $"Pago registrado. Factura {factura.NumeroFactura} generada."
+                ? $"Pago registrado (RD$ {MontoEditable:N2}). Factura {factura.NumeroFactura} generada."
                 : "Pago registrado.";
 
+            Cargar();
+        }
+
+        /// <summary>
+        /// Guarda cambios sobre un pago ya existente: corrige el monto (si se puso por error),
+        /// la forma de pago, el banco y la fecha del pago. Tambien corrige la factura asociada.
+        /// </summary>
+        private void GuardarCambios()
+        {
+            if (Seleccionado == null) return;
+
+            if (MontoEditable <= 0)
+            {
+                MessageBox.Show("El monto debe ser mayor que cero.", "Editar pago",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            var r = MessageBox.Show(
+                $"Se actualizara el periodo \"{Seleccionado.Etiqueta}\" de {Seleccionado.EstudianteNombre}:\n\n" +
+                $"Monto: RD$ {MontoEditable:N2}\n" +
+                $"Forma de pago: {FormaPago}\n" +
+                (FormaPago == FormaPago.Transferencia ? $"Banco: {Banco}\n" : string.Empty) +
+                $"Fecha de pago: {FechaPago:dd/MM/yyyy}\n\n" +
+                "Deseas guardar estos cambios?",
+                "Editar pago", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (r != MessageBoxResult.Yes) return;
+
+            _db.ActualizarPago(Seleccionado.Id, MontoEditable, FormaPago,
+                FormaPago == FormaPago.Transferencia ? Banco : string.Empty, FechaPago);
+
+            Mensaje = $"Cambios guardados. Monto actualizado a RD$ {MontoEditable:N2}.";
             Cargar();
         }
 

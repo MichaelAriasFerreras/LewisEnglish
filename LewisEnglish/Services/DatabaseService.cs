@@ -383,6 +383,65 @@ namespace LewisEnglish.Services
             return CrearFacturaInterna(db, pago);
         }
 
+        /// <summary>
+        /// Registra el pago de un periodo con un monto especifico (por si el coach
+        /// necesita cobrar un valor distinto a la tarifa por defecto).
+        /// </summary>
+        public Factura? RegistrarPagoConMonto(int pagoId, decimal monto, FormaPago formaPago, string banco, DateTime fechaPago)
+        {
+            using var db = new AppDbContext();
+            var pago = db.Pagos.Find(pagoId);
+            if (pago == null) return null;
+
+            pago.Estado = EstadoPago.Pagado;
+            pago.FechaPago = fechaPago;
+            pago.FormaPago = formaPago;
+            pago.Banco = banco ?? string.Empty;
+            if (monto > 0) pago.Monto = monto;
+            db.SaveChanges();
+
+            return CrearFacturaInterna(db, pago);
+        }
+
+        /// <summary>
+        /// Edita un pago existente (monto, forma de pago, banco, fecha). Corrige
+        /// tambien la factura asociada si ya fue generada. Sirve para corregir
+        /// montos ingresados por error.
+        /// </summary>
+        public void ActualizarPago(int pagoId, decimal monto, FormaPago formaPago, string banco, DateTime? fechaPago)
+        {
+            using var db = new AppDbContext();
+            var pago = db.Pagos.Find(pagoId);
+            if (pago == null) return;
+
+            if (monto > 0) pago.Monto = monto;
+            pago.FormaPago = formaPago;
+            pago.Banco = formaPago == FormaPago.Transferencia ? (banco ?? string.Empty) : string.Empty;
+            if (fechaPago.HasValue && pago.Estado == EstadoPago.Pagado)
+                pago.FechaPago = fechaPago;
+
+            // Corregir la factura asociada, si existe
+            var factura = db.Facturas.FirstOrDefault(f => f.PagoId == pago.Id);
+            if (factura != null)
+            {
+                factura.Monto = pago.Monto;
+                factura.FormaPago = pago.FormaPago;
+                factura.Banco = pago.Banco;
+                if (pago.FechaPago.HasValue) factura.Fecha = pago.FechaPago.Value;
+
+                // Regenerar el PDF de respaldo con los datos corregidos
+                try
+                {
+                    string ruta = FacturaPdfGenerator.RutaRespaldo(factura);
+                    FacturaPdfGenerator.Generar(factura, ruta);
+                    factura.RutaArchivo = ruta;
+                }
+                catch { /* el respaldo no debe interrumpir la correccion */ }
+            }
+
+            db.SaveChanges();
+        }
+
         // ===================== FACTURAS =====================
 
         private Factura CrearFacturaInterna(AppDbContext db, Pago pago)

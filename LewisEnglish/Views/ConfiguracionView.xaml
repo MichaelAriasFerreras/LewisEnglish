@@ -14,34 +14,70 @@
                        Style="{StaticResource SubtituloPagina}" />
         </StackPanel>
 
-        <Border Grid.Row="1" Style="{StaticResource Tarjeta}" Width="460"
-                HorizontalAlignment="Left" VerticalAlignment="Top">
-            <StackPanel>
-                <TextBlock Text="Credenciales de acceso" FontSize="16" FontWeight="SemiBold"
-                           Foreground="{StaticResource TextoPrincipal}" Margin="0,0,0,6" />
-                <TextBlock Text="Deja los campos de contrasena vacios si solo deseas cambiar el correo o el nombre."
-                           FontSize="12" Foreground="{StaticResource TextoSecundario}"
-                           TextWrapping="Wrap" Margin="0,0,0,6" />
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <WrapPanel Orientation="Horizontal">
 
-                <TextBlock Text="Nombre a mostrar" Style="{StaticResource EtiquetaCampo}" />
-                <TextBox Text="{Binding Nombre, UpdateSourceTrigger=PropertyChanged}" />
+                <!-- Tarjeta: Credenciales -->
+                <Border Style="{StaticResource Tarjeta}" Width="460"
+                        HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,0,16,16">
+                    <StackPanel>
+                        <TextBlock Text="Credenciales de acceso" FontSize="16" FontWeight="SemiBold"
+                                   Foreground="{StaticResource TextoPrincipal}" Margin="0,0,0,6" />
+                        <TextBlock Text="Deja los campos de contrasena vacios si solo deseas cambiar el correo o el nombre."
+                                   FontSize="12" Foreground="{StaticResource TextoSecundario}"
+                                   TextWrapping="Wrap" Margin="0,0,0,6" />
 
-                <TextBlock Text="Correo electronico" Style="{StaticResource EtiquetaCampo}" />
-                <TextBox Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBlock Text="Nombre a mostrar" Style="{StaticResource EtiquetaCampo}" />
+                        <TextBox Text="{Binding Nombre, UpdateSourceTrigger=PropertyChanged}" />
 
-                <TextBlock Text="Nueva contrasena" Style="{StaticResource EtiquetaCampo}" />
-                <PasswordBox x:Name="PassBox" />
+                        <TextBlock Text="Correo electronico" Style="{StaticResource EtiquetaCampo}" />
+                        <TextBox Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}" />
 
-                <TextBlock Text="Confirmar nueva contrasena" Style="{StaticResource EtiquetaCampo}" />
-                <PasswordBox x:Name="PassConfirmBox" />
+                        <TextBlock Text="Nueva contrasena" Style="{StaticResource EtiquetaCampo}" />
+                        <PasswordBox x:Name="PassBox" />
 
-                <TextBlock Text="{Binding Mensaje}" Foreground="{Binding ColorMensaje}"
-                           FontSize="12.5" TextWrapping="Wrap" Margin="0,12,0,0" />
+                        <TextBlock Text="Confirmar nueva contrasena" Style="{StaticResource EtiquetaCampo}" />
+                        <PasswordBox x:Name="PassConfirmBox" />
 
-                <Button Content="Guardar cambios" Style="{StaticResource BotonPrimario}"
-                        Margin="0,14,0,0" HorizontalAlignment="Left"
-                        Click="Guardar_Click" />
-            </StackPanel>
-        </Border>
+                        <TextBlock Text="{Binding Mensaje}" Foreground="{Binding ColorMensaje}"
+                                   FontSize="12.5" TextWrapping="Wrap" Margin="0,12,0,0" />
+
+                        <Button Content="Guardar cambios" Style="{StaticResource BotonPrimario}"
+                                Margin="0,14,0,0" HorizontalAlignment="Left"
+                                Click="Guardar_Click" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Tarjeta: Respaldo de base de datos -->
+                <Border Style="{StaticResource Tarjeta}" Width="460"
+                        HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,0,0,16">
+                    <StackPanel>
+                        <TextBlock Text="Respaldo de base de datos" FontSize="16" FontWeight="SemiBold"
+                                   Foreground="{StaticResource TextoPrincipal}" Margin="0,0,0,6" />
+                        <TextBlock Text="Guarda una copia de seguridad de todos tus estudiantes, pagos y facturas en un archivo. Puedes restaurarla en esta computadora o en otra."
+                                   FontSize="12" Foreground="{StaticResource TextoSecundario}"
+                                   TextWrapping="Wrap" Margin="0,0,0,12" />
+
+                        <Button Content="Guardar copia de seguridad" Style="{StaticResource BotonPrimario}"
+                                HorizontalAlignment="Left" Margin="0,0,0,10"
+                                Click="GuardarRespaldo_Click" />
+
+                        <Button Content="Restaurar copia de seguridad" Style="{StaticResource BotonExito}"
+                                HorizontalAlignment="Left"
+                                Click="RestaurarRespaldo_Click" />
+
+                        <Border Background="{StaticResource Navy}" CornerRadius="6" Padding="12,8" Margin="0,14,0,0">
+                            <TextBlock Text="Importante: al restaurar una copia se reemplazan TODOS los datos actuales por los del archivo. La aplicacion se cerrara al terminar para aplicar los cambios."
+                                       FontSize="11.5" Foreground="{StaticResource Naranja}" TextWrapping="Wrap" />
+                        </Border>
+
+                        <TextBlock x:Name="MensajeRespaldo"
+                                   Foreground="{StaticResource Verde}"
+                                   FontSize="12.5" TextWrapping="Wrap" Margin="0,12,0,0" />
+                    </StackPanel>
+                </Border>
+
+            </WrapPanel>
+        </ScrollViewer>
     </Grid>
 </UserControl>

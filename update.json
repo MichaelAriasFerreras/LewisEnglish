@@ -1,5 +1,5 @@
 {
-  "version": "1.4.0",
-  "url": "https://github.com/MichaelAriasFerreras/LewisEnglish/releases/download/v1.4.0/LewisEnglish-app.zip",
-  "notes": "Banco deshabilitado al seleccionar Efectivo. Respaldo y restauración de base de datos desde el launcher."
+  "version": "1.5.0",
+  "url": "https://github.com/MichaelAriasFerreras/LewisEnglish/releases/download/v1.5.0/LewisEnglish-app.zip",
+  "notes": "Respaldo y restauración de base de datos ahora también dentro de la app (Configuración). Nuevo: editar/corregir pagos (monto, forma de pago, banco y fecha). El periodo pagado se muestra claramente (ej. Semana del 1-7 Sep 2026 o Mes de Septiembre 2026)."
 }
