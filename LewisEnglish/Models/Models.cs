@@ -68,7 +68,9 @@ namespace LewisEnglish.Models
     {
         Pendiente = 0,
         Pagado = 1,
-        Vencido = 2
+        Vencido = 2,
+        /// <summary>Pago parcial: el estudiante abono una parte pero aun queda saldo.</summary>
+        Parcial = 3
     }
 
     /// <summary>Estado del estudiante.</summary>
@@ -193,7 +195,11 @@ namespace LewisEnglish.Models
         /// <summary>Etiqueta legible del periodo, ej. "Semana del 1-7 Sep 2026".</summary>
         public string Etiqueta { get; set; } = string.Empty;
 
+        /// <summary>Monto total del periodo (la tarifa a cobrar).</summary>
         public decimal Monto { get; set; }
+
+        /// <summary>Total abonado hasta ahora (suma de pagos parciales).</summary>
+        public decimal MontoPagado { get; set; }
 
         public EstadoPago Estado { get; set; } = EstadoPago.Pendiente;
 
@@ -207,10 +213,15 @@ namespace LewisEnglish.Models
         public bool FacturaGenerada { get; set; }
 
         // --------- Presentacion ---------
+
+        /// <summary>Saldo pendiente = total - abonado. Nunca negativo.</summary>
+        public decimal Saldo => Monto - MontoPagado < 0 ? 0 : Monto - MontoPagado;
+
         public string EstadoTexto => Estado switch
         {
             EstadoPago.Pagado => "Pagado",
             EstadoPago.Vencido => "Vencido",
+            EstadoPago.Parcial => "Parcial",
             _ => "Pendiente"
         };
 

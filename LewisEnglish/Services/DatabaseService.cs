@@ -28,6 +28,21 @@ namespace LewisEnglish.Services
         public decimal Monto { get; set; }
     }
 
+    /// <summary>Resultado de registrar un abono (pago total o parcial) sobre un periodo.</summary>
+    public class ResultadoAbono
+    {
+        /// <summary>Factura generada (solo cuando el periodo queda totalmente pagado).</summary>
+        public Factura? Factura { get; set; }
+        /// <summary>True si con este abono el periodo quedo totalmente pagado.</summary>
+        public bool Completo { get; set; }
+        /// <summary>Monto abonado en esta operacion.</summary>
+        public decimal Abono { get; set; }
+        /// <summary>Total acumulado pagado del periodo despues del abono.</summary>
+        public decimal TotalPagado { get; set; }
+        /// <summary>Saldo pendiente del periodo despues del abono.</summary>
+        public decimal Saldo { get; set; }
+    }
+
     /// <summary>
     /// Capa de acceso a datos y logica de negocio principal.
     /// </summary>
@@ -104,12 +119,18 @@ namespace LewisEnglish.Services
                     ""PeriodoFin"" TEXT NOT NULL,
                     ""Etiqueta"" TEXT NOT NULL,
                     ""Monto"" decimal(18,2) NOT NULL,
+                    ""MontoPagado"" decimal(18,2) NOT NULL DEFAULT 0,
                     ""Estado"" INTEGER NOT NULL,
                     ""FechaPago"" TEXT NULL,
                     ""FormaPago"" INTEGER NOT NULL,
                     ""Banco"" TEXT NOT NULL,
                     ""FacturaGenerada"" INTEGER NOT NULL DEFAULT 0
                 );");
+
+            // Migracion: agregar columna MontoPagado a bases de datos existentes
+            EjecutarSqlSilencioso(db, @"ALTER TABLE ""Pagos"" ADD COLUMN ""MontoPagado"" decimal(18,2) NOT NULL DEFAULT 0");
+            // Backfill: los periodos ya marcados como Pagados (Estado=1) deben tener el total abonado
+            EjecutarSqlSilencioso(db, @"UPDATE ""Pagos"" SET ""MontoPagado"" = ""Monto"" WHERE ""Estado"" = 1 AND ""MontoPagado"" = 0");
 
             db.Database.ExecuteSqlRaw(
                 @"CREATE TABLE IF NOT EXISTS ""Facturas"" (
@@ -360,7 +381,7 @@ namespace LewisEnglish.Services
         {
             using var db = new AppDbContext();
             return db.Pagos
-                .Where(p => p.Estado == EstadoPago.Pendiente || p.Estado == EstadoPago.Vencido)
+                .Where(p => p.Estado == EstadoPago.Pendiente || p.Estado == EstadoPago.Vencido || p.Estado == EstadoPago.Parcial)
                 .OrderBy(p => p.PeriodoFin)
                 .ToList();
         }
@@ -384,41 +405,74 @@ namespace LewisEnglish.Services
         }
 
         /// <summary>
-        /// Registra el pago de un periodo con un monto especifico (por si el coach
-        /// necesita cobrar un valor distinto a la tarifa por defecto).
+        /// Registra un ABONO (pago total o parcial) sobre un periodo. Suma el monto
+        /// abonado al total ya pagado. Si con este abono se cubre el total del periodo,
+        /// el periodo queda "Pagado" y se genera la factura; si aun queda saldo, el
+        /// periodo queda "Parcial" y se muestra cuanto falta por pagar.
         /// </summary>
-        public Factura? RegistrarPagoConMonto(int pagoId, decimal monto, FormaPago formaPago, string banco, DateTime fechaPago)
+        public ResultadoAbono RegistrarAbono(int pagoId, decimal abono, FormaPago formaPago, string banco, DateTime fechaPago)
         {
             using var db = new AppDbContext();
             var pago = db.Pagos.Find(pagoId);
-            if (pago == null) return null;
+            if (pago == null) return new ResultadoAbono();
 
-            pago.Estado = EstadoPago.Pagado;
-            pago.FechaPago = fechaPago;
+            if (abono <= 0) return new ResultadoAbono { Saldo = pago.Monto - pago.MontoPagado };
+
+            pago.MontoPagado += abono;
+            if (pago.MontoPagado > pago.Monto) pago.MontoPagado = pago.Monto; // no permitir sobrepago
+
             pago.FormaPago = formaPago;
-            pago.Banco = banco ?? string.Empty;
-            if (monto > 0) pago.Monto = monto;
+            pago.Banco = formaPago == FormaPago.Transferencia ? (banco ?? string.Empty) : string.Empty;
+            pago.FechaPago = fechaPago;
+
+            bool completo = pago.MontoPagado >= pago.Monto && pago.Monto > 0;
+            pago.Estado = completo ? EstadoPago.Pagado : EstadoPago.Parcial;
             db.SaveChanges();
 
-            return CrearFacturaInterna(db, pago);
+            Factura? factura = null;
+            // Generar factura solo cuando el periodo queda totalmente pagado (evita facturas "PAGADO" en abonos parciales)
+            if (completo && !pago.FacturaGenerada)
+                factura = CrearFacturaInterna(db, pago);
+
+            return new ResultadoAbono
+            {
+                Factura = factura,
+                Completo = completo,
+                Abono = abono,
+                TotalPagado = pago.MontoPagado,
+                Saldo = pago.Monto - pago.MontoPagado
+            };
         }
 
         /// <summary>
-        /// Edita un pago existente (monto, forma de pago, banco, fecha). Corrige
-        /// tambien la factura asociada si ya fue generada. Sirve para corregir
-        /// montos ingresados por error.
+        /// Edita un pago existente (total del periodo, total abonado, forma de pago,
+        /// banco y fecha). Recalcula el estado y corrige la factura si existe. Sirve
+        /// para corregir montos ingresados por error.
         /// </summary>
-        public void ActualizarPago(int pagoId, decimal monto, FormaPago formaPago, string banco, DateTime? fechaPago)
+        public void ActualizarPago(int pagoId, decimal montoTotal, decimal montoPagado, FormaPago formaPago, string banco, DateTime? fechaPago)
         {
             using var db = new AppDbContext();
             var pago = db.Pagos.Find(pagoId);
             if (pago == null) return;
 
-            if (monto > 0) pago.Monto = monto;
+            if (montoTotal > 0) pago.Monto = montoTotal;
+
+            // Ajustar el abonado (no negativo, no mayor que el total)
+            if (montoPagado < 0) montoPagado = 0;
+            if (montoPagado > pago.Monto) montoPagado = pago.Monto;
+            pago.MontoPagado = montoPagado;
+
             pago.FormaPago = formaPago;
             pago.Banco = formaPago == FormaPago.Transferencia ? (banco ?? string.Empty) : string.Empty;
-            if (fechaPago.HasValue && pago.Estado == EstadoPago.Pagado)
-                pago.FechaPago = fechaPago;
+            if (fechaPago.HasValue) pago.FechaPago = fechaPago;
+
+            // Recalcular estado segun lo abonado
+            if (pago.MontoPagado >= pago.Monto && pago.Monto > 0)
+                pago.Estado = EstadoPago.Pagado;
+            else if (pago.MontoPagado > 0)
+                pago.Estado = EstadoPago.Parcial;
+            else
+                pago.Estado = EstadoPago.Pendiente;
 
             // Corregir la factura asociada, si existe
             var factura = db.Facturas.FirstOrDefault(f => f.PagoId == pago.Id);
@@ -509,8 +563,9 @@ namespace LewisEnglish.Services
                 .Where(p => p.PeriodoInicio <= finMes && p.PeriodoFin >= inicioMes)
                 .ToList();
 
-            m.CobradoMes = delMes.Where(p => p.Estado == EstadoPago.Pagado).Sum(p => p.Monto);
-            m.PendienteMes = delMes.Where(p => p.Estado != EstadoPago.Pagado).Sum(p => p.Monto);
+            // Cobrado = todo lo abonado (incluye abonos parciales); Pendiente = saldo por cobrar
+            m.CobradoMes = delMes.Sum(p => p.MontoPagado);
+            m.PendienteMes = delMes.Sum(p => p.Saldo);
             m.EsperadoMes = m.CobradoMes + m.PendienteMes;
 
             m.PagosVencidos = db.Pagos
@@ -525,11 +580,11 @@ namespace LewisEnglish.Services
                 var mes = inicioMes.AddMonths(-i);
                 var mesFin = mes.AddMonths(1).AddDays(-1);
                 decimal monto = db.Pagos
-                    .Where(p => p.Estado == EstadoPago.Pagado
+                    .Where(p => (p.Estado == EstadoPago.Pagado || p.Estado == EstadoPago.Parcial)
                         && p.FechaPago != null
                         && p.FechaPago >= mes && p.FechaPago <= mesFin)
                     .ToList()
-                    .Sum(p => p.Monto);
+                    .Sum(p => p.MontoPagado);
                 m.IngresosPorMes.Add(new IngresoMensual
                 {
                     Mes = $"{PeriodoHelper.NombreMes(mes.Month).Substring(0, 3)} {mes.Year}",

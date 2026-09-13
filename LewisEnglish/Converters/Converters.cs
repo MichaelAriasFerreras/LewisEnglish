@@ -51,6 +51,7 @@ namespace LewisEnglish.Converters
                 {
                     EstadoPago.Pagado => new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1B5E20")),
                     EstadoPago.Vencido => new SolidColorBrush((Color)ColorConverter.ConvertFromString("#B71C1C")),
+                    EstadoPago.Parcial => new SolidColorBrush((Color)ColorConverter.ConvertFromString("#C2760C")),
                     _ => new SolidColorBrush((Color)ColorConverter.ConvertFromString("#B7791F"))
                 };
             }

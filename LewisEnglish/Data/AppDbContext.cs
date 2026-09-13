@@ -57,6 +57,7 @@ namespace LewisEnglish.Data
             // Precision para valores monetarios
             modelBuilder.Entity<Estudiante>().Property(e => e.Tarifa).HasColumnType("decimal(18,2)");
             modelBuilder.Entity<Pago>().Property(p => p.Monto).HasColumnType("decimal(18,2)");
+            modelBuilder.Entity<Pago>().Property(p => p.MontoPagado).HasColumnType("decimal(18,2)");
             modelBuilder.Entity<Factura>().Property(f => f.Monto).HasColumnType("decimal(18,2)");
 
             // Ignorar propiedades calculadas / de presentacion
@@ -68,6 +69,7 @@ namespace LewisEnglish.Data
             modelBuilder.Entity<Estudiante>().Ignore(e => e.FormaPagoTexto);
             modelBuilder.Entity<Asistencia>().Ignore(a => a.EstadoTexto);
             modelBuilder.Entity<Pago>().Ignore(p => p.EstadoTexto);
+            modelBuilder.Entity<Pago>().Ignore(p => p.Saldo);
             modelBuilder.Entity<Pago>().Ignore(p => p.FrecuenciaTexto);
             modelBuilder.Entity<Pago>().Ignore(p => p.FormaPagoTexto);
             modelBuilder.Entity<Factura>().Ignore(f => f.FormaPagoTexto);

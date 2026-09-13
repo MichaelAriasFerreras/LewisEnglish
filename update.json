@@ -1,5 +1,5 @@
 {
-  "version": "1.5.0",
-  "url": "https://github.com/MichaelAriasFerreras/LewisEnglish/releases/download/v1.5.0/LewisEnglish-app.zip",
-  "notes": "Respaldo y restauración de base de datos ahora también dentro de la app (Configuración). Nuevo: editar/corregir pagos (monto, forma de pago, banco y fecha). El periodo pagado se muestra claramente (ej. Semana del 1-7 Sep 2026 o Mes de Septiembre 2026)."
+  "version": "1.6.0",
+  "url": "https://github.com/MichaelAriasFerreras/LewisEnglish/releases/download/v1.6.0/LewisEnglish-app.zip",
+  "notes": "Nuevo: pagos parciales (abonos). Si un estudiante debe RD$ 2,000 y solo paga RD$ 500, el periodo queda en 'Parcial' con un saldo pendiente de RD$ 1,500 y se registra que abonó RD$ 500. Al terminar de pagar el saldo, el periodo pasa a 'Pagado' y se genera la factura. La tabla ahora muestra Total, Abonado y Saldo, y puedes corregir el total del periodo o el total abonado."
 }

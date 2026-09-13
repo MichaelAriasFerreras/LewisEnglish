@@ -12,9 +12,9 @@
     <Product>Lewis - Sistema de Facturacion</Product>
     <AssemblyTitle>Lewis, English Speaking Coach</AssemblyTitle>
     <Company>Lewis English Speaking Coach</Company>
-    <Version>1.5.0</Version>
-    <FileVersion>1.5.0.0</FileVersion>
-    <AssemblyVersion>1.5.0.0</AssemblyVersion>
+    <Version>1.6.0</Version>
+    <FileVersion>1.6.0.0</FileVersion>
+    <AssemblyVersion>1.6.0.0</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
