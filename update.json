@@ -1,5 +1,5 @@
 {
-  "version": "1.6.0",
-  "url": "https://github.com/MichaelAriasFerreras/LewisEnglish/releases/download/v1.6.0/LewisEnglish-app.zip",
-  "notes": "Nuevo: pagos parciales (abonos). Si un estudiante debe RD$ 2,000 y solo paga RD$ 500, el periodo queda en 'Parcial' con un saldo pendiente de RD$ 1,500 y se registra que abonó RD$ 500. Al terminar de pagar el saldo, el periodo pasa a 'Pagado' y se genera la factura. La tabla ahora muestra Total, Abonado y Saldo, y puedes corregir el total del periodo o el total abonado."
+  "version": "1.7.0",
+  "url": "https://github.com/MichaelAriasFerreras/LewisEnglish/releases/download/v1.7.0/LewisEnglish-app.zip",
+  "notes": "Novedades: (1) Mas horarios en el registro del estudiante: la 'Hora de inicio' ahora llega hasta las 10:00 PM. (2) El historial de pagos del estudiante es mucho mas completo: al abrir un estudiante veras por cada periodo el Total, cuanto ha Abonado, el Saldo pendiente y el detalle del ultimo movimiento (fecha y forma de pago), no solo 'Pagado'. (3) En Facturas se agrego el boton 'Enviar por WhatsApp': abre el chat del estudiante con su numero registrado, copia el PDF de la factura y abre su carpeta para que solo tengas que pegarlo (Ctrl+V) o arrastrarlo y enviarlo, sin guardarlo manualmente."
 }

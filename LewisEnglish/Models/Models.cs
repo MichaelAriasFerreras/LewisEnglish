@@ -227,6 +227,29 @@ namespace LewisEnglish.Models
 
         public string FrecuenciaTexto => Frecuencia.ToString();
 
+        // --------- Textos para el historial del estudiante ---------
+
+        /// <summary>Ej. "Total: RD$ 2,000.00".</summary>
+        public string TotalTexto => $"Total: RD$ {Monto:N2}";
+
+        /// <summary>Ej. "Abonado: RD$ 500.00   ·   Saldo: RD$ 1,500.00".</summary>
+        public string AbonadoSaldoTexto => $"Abonado: RD$ {MontoPagado:N2}   ·   Saldo: RD$ {Saldo:N2}";
+
+        /// <summary>
+        /// Detalle del ultimo movimiento: fecha y forma de pago. Ej. "Pagado el 08/09/2026 · Efectivo".
+        /// </summary>
+        public string PagoDetalleTexto
+        {
+            get
+            {
+                if (Estado == EstadoPago.Pendiente || Estado == EstadoPago.Vencido || MontoPagado <= 0)
+                    return "Sin pagos registrados aun";
+                string cuando = FechaPago.HasValue ? $" el {FechaPago.Value:dd/MM/yyyy}" : string.Empty;
+                string quePaso = Estado == EstadoPago.Pagado ? "Pagado" : "Ultimo abono";
+                return $"{quePaso}{cuando}  ·  {FormaPagoTexto}";
+            }
+        }
+
         public string FormaPagoTexto => FormaPago == FormaPago.Transferencia
             ? (string.IsNullOrWhiteSpace(Banco) ? "Transferencia" : $"Transferencia - {Banco}")
             : "Efectivo";

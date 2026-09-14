@@ -42,13 +42,13 @@ namespace LewisEnglish.Helpers
         }
 
         /// <summary>
-        /// Lista de franjas horarias disponibles (6:00 AM a 8:00 PM cada 30 min).
+        /// Lista de franjas horarias disponibles (6:00 AM a 10:00 PM cada 30 min).
         /// </summary>
         public static List<string> FranjasHorarias()
         {
             var lista = new List<string>();
             var inicio = new DateTime(2000, 1, 1, 6, 0, 0);
-            var fin = new DateTime(2000, 1, 1, 20, 0, 0);
+            var fin = new DateTime(2000, 1, 1, 22, 0, 0);
             while (inicio <= fin)
             {
                 lista.Add(inicio.ToString("h:mm tt", Cultura));

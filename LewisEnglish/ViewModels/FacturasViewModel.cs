@@ -1,7 +1,9 @@
 using System;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using Microsoft.Win32;
 using LewisEnglish.Helpers;
@@ -24,6 +26,7 @@ namespace LewisEnglish.ViewModels
             _db = db;
             AbrirCommand = new RelayCommand(_ => Abrir(), _ => Seleccionada != null);
             GuardarComoCommand = new RelayCommand(_ => GuardarComo(), _ => Seleccionada != null);
+            EnviarWhatsAppCommand = new RelayCommand(_ => EnviarWhatsApp(), _ => Seleccionada != null);
         }
 
         public ObservableCollection<Factura> Facturas { get; } = new();
@@ -38,6 +41,7 @@ namespace LewisEnglish.ViewModels
 
         public RelayCommand AbrirCommand { get; }
         public RelayCommand GuardarComoCommand { get; }
+        public RelayCommand EnviarWhatsAppCommand { get; }
 
         public void Cargar()
         {
@@ -109,6 +113,67 @@ namespace LewisEnglish.ViewModels
                     MessageBox.Show("No se pudo guardar la factura.\n\n" + ex.Message, "Error",
                         MessageBoxButton.OK, MessageBoxImage.Error);
                 }
+            }
+        }
+
+        /// <summary>
+        /// Abre el chat de WhatsApp del estudiante con un mensaje listo y copia el PDF de la
+        /// factura al portapapeles para que solo haya que pegarlo (Ctrl+V) y enviarlo.
+        /// Nota: WhatsApp no permite adjuntar archivos automaticamente desde un enlace, por eso
+        /// se copia el PDF y se abre la carpeta para arrastrarlo si se prefiere.
+        /// </summary>
+        private void EnviarWhatsApp()
+        {
+            if (Seleccionada == null) return;
+
+            var ruta = AsegurarPdf(Seleccionada);
+            if (ruta == null) return;
+
+            // Buscar el telefono/WhatsApp del estudiante de la factura
+            var estudiante = _db.ObtenerEstudiantes().FirstOrDefault(e => e.Id == Seleccionada.EstudianteId);
+            string telefono = estudiante == null
+                ? string.Empty
+                : (string.IsNullOrWhiteSpace(estudiante.WhatsApp) ? estudiante.Telefono : estudiante.WhatsApp);
+
+            if (string.IsNullOrWhiteSpace(telefono))
+            {
+                MessageBox.Show(
+                    "El estudiante no tiene numero de telefono/WhatsApp registrado.\n\n" +
+                    "Agregalo en su perfil (seccion Estudiantes) y vuelve a intentarlo.",
+                    "WhatsApp", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            // Copiar el PDF al portapapeles para pegarlo directamente en el chat
+            bool copiado = false;
+            try
+            {
+                var archivos = new StringCollection { ruta };
+                Clipboard.SetFileDropList(archivos);
+                copiado = true;
+            }
+            catch { /* si falla el portapapeles, igual se abre el chat y la carpeta */ }
+
+            // Abrir el Explorador con el PDF seleccionado (para arrastrarlo si se prefiere)
+            try { Process.Start(new ProcessStartInfo("explorer.exe", $"/select,\"{ruta}\"") { UseShellExecute = true }); }
+            catch { /* opcional */ }
+
+            string mensaje =
+                $"Hola {Seleccionada.EstudianteNombre}, aqui esta tu factura {Seleccionada.NumeroFactura} " +
+                $"por RD$ {Seleccionada.Monto:N2} ({Seleccionada.Periodo}). " +
+                "Gracias - Lewis, English Speaking Coach";
+
+            try
+            {
+                WhatsAppHelper.Enviar(telefono, mensaje);
+                Mensaje = copiado
+                    ? "Se abrio WhatsApp y la factura (PDF) se copio. En el chat presiona Ctrl+V para adjuntarla y presiona Enviar."
+                    : "Se abrio WhatsApp. Arrastra el PDF (se abrio su carpeta) al chat y presiona Enviar.";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("No se pudo abrir WhatsApp.\n\n" + ex.Message, "Error",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

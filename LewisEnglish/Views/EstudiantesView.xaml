@@ -233,18 +233,20 @@
                         <ItemsControl ItemsSource="{Binding PagosSeleccionado}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Border Background="{StaticResource FondoPrincipal}" CornerRadius="8" Padding="10,7" Margin="0,0,0,6">
+                                    <Border Background="{StaticResource FondoPrincipal}" CornerRadius="8" Padding="10,8" Margin="0,0,0,6">
                                         <Grid>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="*" />
                                                 <ColumnDefinition Width="Auto" />
                                             </Grid.ColumnDefinitions>
                                             <StackPanel Grid.Column="0">
-                                                <TextBlock Text="{Binding Etiqueta}" Foreground="{StaticResource TextoPrincipal}" FontSize="12" TextWrapping="Wrap" />
-                                                <TextBlock Text="{Binding Monto, Converter={StaticResource CurrencyConverter}}" Foreground="{StaticResource TextoSecundario}" FontSize="12" />
+                                                <TextBlock Text="{Binding Etiqueta}" Foreground="{StaticResource TextoPrincipal}" FontSize="12.5" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                                <TextBlock Text="{Binding TotalTexto}" Foreground="{StaticResource TextoPrincipal}" FontSize="12" Margin="0,2,0,0" />
+                                                <TextBlock Text="{Binding AbonadoSaldoTexto}" Foreground="{StaticResource TextoSecundario}" FontSize="11.5" Margin="0,1,0,0" TextWrapping="Wrap" />
+                                                <TextBlock Text="{Binding PagoDetalleTexto}" Foreground="{StaticResource TextoSecundario}" FontSize="11" Margin="0,1,0,0" TextWrapping="Wrap" />
                                             </StackPanel>
                                             <TextBlock Grid.Column="1" Text="{Binding EstadoTexto}" FontWeight="SemiBold" FontSize="12"
-                                                       VerticalAlignment="Center"
+                                                       VerticalAlignment="Top" Margin="6,0,0,0"
                                                        Foreground="{Binding Estado, Converter={StaticResource EstadoPagoColorConverter}}" />
                                         </Grid>
                                     </Border>

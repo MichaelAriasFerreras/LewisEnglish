@@ -16,6 +16,8 @@
                            Style="{StaticResource SubtituloPagina}" />
             </StackPanel>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                <Button Content="Enviar por WhatsApp" Style="{StaticResource BotonExito}"
+                        Command="{Binding EnviarWhatsAppCommand}" Margin="0,0,8,0" />
                 <Button Content="Abrir" Style="{StaticResource BotonPrimario}"
                         Command="{Binding AbrirCommand}" Margin="0,0,8,0" />
                 <Button Content="Guardar como..." Style="{StaticResource BotonSecundario}"
