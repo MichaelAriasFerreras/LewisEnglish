@@ -59,7 +59,7 @@ namespace LewisEnglish.ViewModels
                 if (string.IsNullOrWhiteSpace(factura.RutaArchivo) || !File.Exists(factura.RutaArchivo))
                 {
                     string ruta = FacturaPdfGenerator.RutaRespaldo(factura);
-                    FacturaPdfGenerator.Generar(factura, ruta);
+                    FacturaPdfGenerator.Generar(factura, _db.ObtenerAbonosPorPago(factura.PagoId), ruta);
                     return ruta;
                 }
                 return factura.RutaArchivo;

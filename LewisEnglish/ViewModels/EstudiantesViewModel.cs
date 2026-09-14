@@ -57,6 +57,9 @@ namespace LewisEnglish.ViewModels
         /// <summary>Historial de asistencias del estudiante seleccionado (mas recientes primero).</summary>
         public ObservableCollection<Asistencia> AsistenciasSeleccionado { get; } = new();
 
+        /// <summary>Registro de abonos (movimientos de pago) del estudiante seleccionado (mas recientes primero).</summary>
+        public ObservableCollection<Abono> AbonosSeleccionado { get; } = new();
+
         /// <summary>True si el estudiante seleccionado tiene pagos vencidos.</summary>
         public bool TienePagosVencidos
         {
@@ -72,12 +75,15 @@ namespace LewisEnglish.ViewModels
         {
             PagosSeleccionado.Clear();
             AsistenciasSeleccionado.Clear();
+            AbonosSeleccionado.Clear();
             if (_seleccionado == null) return;
 
             foreach (var p in _db.ObtenerPagosPorEstudiante(_seleccionado.Id))
                 PagosSeleccionado.Add(p);
             foreach (var a in _db.ObtenerAsistenciasPorEstudiante(_seleccionado.Id))
                 AsistenciasSeleccionado.Add(a);
+            foreach (var ab in _db.ObtenerAbonosPorEstudiante(_seleccionado.Id))
+                AbonosSeleccionado.Add(ab);
         }
 
         public Estudiante Editable

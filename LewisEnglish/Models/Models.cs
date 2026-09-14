@@ -286,4 +286,52 @@ namespace LewisEnglish.Models
             ? (string.IsNullOrWhiteSpace(Banco) ? "Transferencia" : $"Transferencia - {Banco}")
             : "Efectivo";
     }
+
+    /// <summary>
+    /// Movimiento individual de pago (abono) hecho sobre un periodo. Cada vez que un
+    /// estudiante paga algo (total o parcial) se registra aqui, para tener un historial
+    /// completo de cuanto pago, cuando, como y cuanto quedo pendiente.
+    /// </summary>
+    public class Abono
+    {
+        public int Id { get; set; }
+
+        public int PagoId { get; set; }
+        public int EstudianteId { get; set; }
+
+        public string EstudianteNombre { get; set; } = string.Empty;
+
+        /// <summary>Etiqueta del periodo al que corresponde el abono (ej. "Mes de Septiembre 2026").</summary>
+        public string PeriodoEtiqueta { get; set; } = string.Empty;
+
+        /// <summary>Monto abonado en este movimiento.</summary>
+        public decimal Monto { get; set; }
+
+        /// <summary>Total del periodo al momento del abono.</summary>
+        public decimal TotalPeriodo { get; set; }
+
+        /// <summary>Total acumulado pagado del periodo despues de este abono.</summary>
+        public decimal TotalAcumulado { get; set; }
+
+        /// <summary>Saldo pendiente del periodo despues de este abono.</summary>
+        public decimal SaldoDespues { get; set; }
+
+        public FormaPago FormaPago { get; set; } = FormaPago.Efectivo;
+        public string Banco { get; set; } = string.Empty;
+
+        public DateTime Fecha { get; set; } = DateTime.Now;
+
+        // --------- Presentacion ---------
+        public string FormaPagoTexto => FormaPago == FormaPago.Transferencia
+            ? (string.IsNullOrWhiteSpace(Banco) ? "Transferencia" : $"Transferencia - {Banco}")
+            : "Efectivo";
+
+        /// <summary>Ej. "Abono: RD$ 500.00  ·  Saldo restante: RD$ 1,500.00".</summary>
+        public string MontoSaldoTexto => SaldoDespues > 0
+            ? $"Abono: RD$ {Monto:N2}  ·  Saldo restante: RD$ {SaldoDespues:N2}"
+            : $"Pago: RD$ {Monto:N2}  ·  Periodo saldado";
+
+        /// <summary>Ej. "08/09/2026  ·  Efectivo".</summary>
+        public string FechaFormaTexto => $"{Fecha:dd/MM/yyyy}  ·  {FormaPagoTexto}";
+    }
 }

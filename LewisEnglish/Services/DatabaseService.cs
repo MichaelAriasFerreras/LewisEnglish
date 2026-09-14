@@ -149,6 +149,22 @@ namespace LewisEnglish.Services
                 );");
 
             db.Database.ExecuteSqlRaw(
+                @"CREATE TABLE IF NOT EXISTS ""Abonos"" (
+                    ""Id"" INTEGER NOT NULL CONSTRAINT ""PK_Abonos"" PRIMARY KEY AUTOINCREMENT,
+                    ""PagoId"" INTEGER NOT NULL,
+                    ""EstudianteId"" INTEGER NOT NULL,
+                    ""EstudianteNombre"" TEXT NOT NULL,
+                    ""PeriodoEtiqueta"" TEXT NOT NULL,
+                    ""Monto"" decimal(18,2) NOT NULL,
+                    ""TotalPeriodo"" decimal(18,2) NOT NULL,
+                    ""TotalAcumulado"" decimal(18,2) NOT NULL,
+                    ""SaldoDespues"" decimal(18,2) NOT NULL,
+                    ""FormaPago"" INTEGER NOT NULL,
+                    ""Banco"" TEXT NOT NULL,
+                    ""Fecha"" TEXT NOT NULL
+                );");
+
+            db.Database.ExecuteSqlRaw(
                 @"CREATE TABLE IF NOT EXISTS ""Configuraciones"" (
                     ""Id"" INTEGER NOT NULL CONSTRAINT ""PK_Configuraciones"" PRIMARY KEY AUTOINCREMENT,
                     ""NombreNegocio"" TEXT NOT NULL DEFAULT '',
@@ -386,6 +402,30 @@ namespace LewisEnglish.Services
                 .ToList();
         }
 
+        // ===================== ABONOS (movimientos de pago) =====================
+
+        /// <summary>Devuelve los abonos (movimientos) de un periodo, del mas antiguo al mas reciente.</summary>
+        public List<Abono> ObtenerAbonosPorPago(int pagoId)
+        {
+            using var db = new AppDbContext();
+            return db.Abonos
+                .Where(a => a.PagoId == pagoId)
+                .OrderBy(a => a.Fecha)
+                .ThenBy(a => a.Id)
+                .ToList();
+        }
+
+        /// <summary>Devuelve todos los abonos de un estudiante, del mas reciente al mas antiguo.</summary>
+        public List<Abono> ObtenerAbonosPorEstudiante(int estudianteId)
+        {
+            using var db = new AppDbContext();
+            return db.Abonos
+                .Where(a => a.EstudianteId == estudianteId)
+                .OrderByDescending(a => a.Fecha)
+                .ThenByDescending(a => a.Id)
+                .ToList();
+        }
+
         /// <summary>
         /// Registra el pago de un periodo y genera automaticamente su factura (PDF).
         /// </summary>
@@ -418,8 +458,12 @@ namespace LewisEnglish.Services
 
             if (abono <= 0) return new ResultadoAbono { Saldo = pago.Monto - pago.MontoPagado };
 
+            decimal pagadoAntes = pago.MontoPagado;
             pago.MontoPagado += abono;
             if (pago.MontoPagado > pago.Monto) pago.MontoPagado = pago.Monto; // no permitir sobrepago
+
+            // Monto realmente aplicado (por si el abono excedia el saldo)
+            decimal abonoAplicado = pago.MontoPagado - pagadoAntes;
 
             pago.FormaPago = formaPago;
             pago.Banco = formaPago == FormaPago.Transferencia ? (banco ?? string.Empty) : string.Empty;
@@ -427,6 +471,23 @@ namespace LewisEnglish.Services
 
             bool completo = pago.MontoPagado >= pago.Monto && pago.Monto > 0;
             pago.Estado = completo ? EstadoPago.Pagado : EstadoPago.Parcial;
+
+            // Registrar el movimiento (abono) para tener un historial completo
+            db.Abonos.Add(new Abono
+            {
+                PagoId = pago.Id,
+                EstudianteId = pago.EstudianteId,
+                EstudianteNombre = pago.EstudianteNombre,
+                PeriodoEtiqueta = pago.Etiqueta,
+                Monto = abonoAplicado,
+                TotalPeriodo = pago.Monto,
+                TotalAcumulado = pago.MontoPagado,
+                SaldoDespues = pago.Monto - pago.MontoPagado,
+                FormaPago = pago.FormaPago,
+                Banco = pago.Banco,
+                Fecha = fechaPago
+            });
+
             db.SaveChanges();
 
             Factura? factura = null;
@@ -438,7 +499,7 @@ namespace LewisEnglish.Services
             {
                 Factura = factura,
                 Completo = completo,
-                Abono = abono,
+                Abono = abonoAplicado,
                 TotalPagado = pago.MontoPagado,
                 Saldo = pago.Monto - pago.MontoPagado
             };
@@ -487,7 +548,8 @@ namespace LewisEnglish.Services
                 try
                 {
                     string ruta = FacturaPdfGenerator.RutaRespaldo(factura);
-                    FacturaPdfGenerator.Generar(factura, ruta);
+                    var abonos = db.Abonos.Where(a => a.PagoId == pago.Id).OrderBy(a => a.Fecha).ToList();
+                    FacturaPdfGenerator.Generar(factura, abonos, ruta);
                     factura.RutaArchivo = ruta;
                 }
                 catch { /* el respaldo no debe interrumpir la correccion */ }
@@ -522,7 +584,8 @@ namespace LewisEnglish.Services
             try
             {
                 string ruta = FacturaPdfGenerator.RutaRespaldo(factura);
-                FacturaPdfGenerator.Generar(factura, ruta);
+                var abonos = db.Abonos.Where(a => a.PagoId == pago.Id).OrderBy(a => a.Fecha).ToList();
+                FacturaPdfGenerator.Generar(factura, abonos, ruta);
                 factura.RutaArchivo = ruta;
                 db.SaveChanges();
             }

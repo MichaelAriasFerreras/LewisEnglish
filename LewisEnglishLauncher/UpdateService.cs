@@ -1,8 +1,10 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Net.Http;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace LewisEnglishLauncher
@@ -107,6 +109,14 @@ namespace LewisEnglishLauncher
 
             Directory.CreateDirectory(AppDir);
 
+            // 1) Cerrar la aplicacion si esta abierta (evita el error "el archivo esta
+            //    siendo usado por otro proceso" al sobrescribir LewisEnglish.exe).
+            progreso?.Report("Cerrando la aplicacion si esta abierta...");
+            CerrarAplicacion();
+
+            // 2) Limpiar cualquier archivo temporal .old de una actualizacion anterior.
+            LimpiarArchivosViejos();
+
             string tempZip = Path.Combine(Path.GetTempPath(),
                 $"LewisEnglish_update_{DateTime.Now:yyyyMMddHHmmss}.zip");
 
@@ -115,7 +125,7 @@ namespace LewisEnglishLauncher
             await File.WriteAllBytesAsync(tempZip, bytes);
 
             progreso?.Report("Instalando archivos...");
-            // Extraer sobrescribiendo
+            // Extraer sobrescribiendo (con reintentos y renombrado si algun archivo sigue en uso).
             using (var archive = ZipFile.OpenRead(tempZip))
             {
                 foreach (var entry in archive.Entries)
@@ -132,7 +142,7 @@ namespace LewisEnglishLauncher
                     if (!string.IsNullOrEmpty(dir))
                         Directory.CreateDirectory(dir);
 
-                    entry.ExtractToFile(destino, overwrite: true);
+                    ExtraerConReintento(entry, destino);
                 }
             }
 
@@ -141,7 +151,90 @@ namespace LewisEnglishLauncher
 
             try { File.Delete(tempZip); } catch { }
 
+            // Intentar borrar los .old ya liberados (best-effort).
+            LimpiarArchivosViejos();
+
             progreso?.Report("Actualizacion completada.");
+        }
+
+        /// <summary>
+        /// Cierra cualquier instancia en ejecucion de la aplicacion (LewisEnglish.exe).
+        /// Primero intenta un cierre normal y, si no responde, la finaliza. Asi se libera
+        /// el ejecutable para poder sobrescribirlo durante la actualizacion.
+        /// </summary>
+        private static void CerrarAplicacion()
+        {
+            try
+            {
+                foreach (var p in Process.GetProcessesByName("LewisEnglish"))
+                {
+                    try
+                    {
+                        if (p.HasExited) continue;
+                        p.CloseMainWindow();
+                        if (!p.WaitForExit(3000))
+                        {
+                            p.Kill(true);
+                            p.WaitForExit(3000);
+                        }
+                    }
+                    catch { /* ignorar: puede haber cerrado sola */ }
+                    finally { p.Dispose(); }
+                }
+                // Pequena pausa para que Windows libere por completo el archivo.
+                Thread.Sleep(500);
+            }
+            catch { /* no bloquear la actualizacion por esto */ }
+        }
+
+        /// <summary>
+        /// Extrae un archivo del ZIP sobre su destino. Si el archivo esta en uso o
+        /// bloqueado, lo renombra a ".old_..." (Windows permite mover un archivo en uso
+        /// aunque no sobrescribirlo) y reintenta, garantizando que la actualizacion no falle.
+        /// </summary>
+        private static void ExtraerConReintento(ZipArchiveEntry entry, string destino)
+        {
+            const int maxIntentos = 6;
+            for (int intento = 1; intento <= maxIntentos; intento++)
+            {
+                try
+                {
+                    entry.ExtractToFile(destino, overwrite: true);
+                    return;
+                }
+                catch (Exception ex) when ((ex is IOException || ex is UnauthorizedAccessException) && intento < maxIntentos)
+                {
+                    // El archivo destino esta en uso: renombrarlo para liberar la ruta.
+                    try
+                    {
+                        if (File.Exists(destino))
+                        {
+                            string viejo = destino + ".old_" + DateTime.Now.ToString("yyyyMMddHHmmssfff");
+                            File.Move(destino, viejo);
+                        }
+                    }
+                    catch { /* si no se puede renombrar, esperar y reintentar */ }
+
+                    Thread.Sleep(400);
+                }
+            }
+
+            // Ultimo intento: si falla aqui, la excepcion se propaga y se informa al usuario.
+            entry.ExtractToFile(destino, overwrite: true);
+        }
+
+        /// <summary>Elimina los archivos temporales ".old_" dejados por actualizaciones previas.</summary>
+        private void LimpiarArchivosViejos()
+        {
+            try
+            {
+                if (!Directory.Exists(AppDir)) return;
+                foreach (var f in Directory.GetFiles(AppDir, "*.old_*", SearchOption.AllDirectories))
+                {
+                    try { File.Delete(f); } catch { /* aun en uso: se borrara la proxima vez */ }
+                }
+            }
+            catch { /* best-effort */ }
         }
     }
 }

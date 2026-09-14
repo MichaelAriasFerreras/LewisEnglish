@@ -1,5 +1,5 @@
 {
-  "version": "1.7.0",
-  "url": "https://github.com/MichaelAriasFerreras/LewisEnglish/releases/download/v1.7.0/LewisEnglish-app.zip",
-  "notes": "Novedades: (1) Mas horarios en el registro del estudiante: la 'Hora de inicio' ahora llega hasta las 10:00 PM. (2) El historial de pagos del estudiante es mucho mas completo: al abrir un estudiante veras por cada periodo el Total, cuanto ha Abonado, el Saldo pendiente y el detalle del ultimo movimiento (fecha y forma de pago), no solo 'Pagado'. (3) En Facturas se agrego el boton 'Enviar por WhatsApp': abre el chat del estudiante con su numero registrado, copia el PDF de la factura y abre su carpeta para que solo tengas que pegarlo (Ctrl+V) o arrastrarlo y enviarlo, sin guardarlo manualmente."
+  "version": "1.8.0",
+  "url": "https://github.com/MichaelAriasFerreras/LewisEnglish/releases/download/v1.8.0/LewisEnglish-app.zip",
+  "notes": "Novedades: (1) Se corrigio el error de actualizacion 'The process cannot access the file... because it is being used by another process': ahora el actualizador cierra automaticamente la aplicacion antes de reemplazar los archivos y reintenta si algun archivo esta en uso, para que la actualizacion se complete sin errores. (2) Registro completo de abonos: cada vez que un estudiante paga (total o parcial) se guarda el movimiento con el monto abonado, la forma de pago, la fecha y cuanto queda pendiente. En el detalle del estudiante veras la seccion 'Registro de abonos (movimientos)' con todo el historial. (3) Las facturas ahora muestran el proceso de pago completo: una tabla con cada abono (fecha, forma de pago, monto y saldo restante) y un resumen con Total del periodo, Total abonado y Saldo pendiente."
 }

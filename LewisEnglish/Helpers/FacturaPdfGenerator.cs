@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using LewisEnglish.Models;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
@@ -63,11 +65,22 @@ namespace LewisEnglish.Helpers
         }
 
         /// <summary>
-        /// Genera el PDF de una factura en la ruta indicada.
+        /// Genera el PDF de una factura en la ruta indicada. Compatibilidad: sin abonos.
         /// </summary>
         public static void Generar(Factura factura, string rutaSalida)
+            => Generar(factura, null, rutaSalida);
+
+        /// <summary>
+        /// Genera el PDF de una factura, incluyendo el proceso de pago (lista de abonos).
+        /// </summary>
+        public static void Generar(Factura factura, List<Abono>? abonos, string rutaSalida)
         {
             var logo = CargarLogo();
+            abonos ??= new List<Abono>();
+            decimal totalAbonado = abonos.Count > 0 ? abonos.Sum(a => a.Monto) : factura.Monto;
+            if (totalAbonado <= 0) totalAbonado = factura.Monto;
+            decimal saldoFinal = factura.Monto - totalAbonado;
+            if (saldoFinal < 0) saldoFinal = 0;
 
             Document.Create(container =>
             {
@@ -77,9 +90,9 @@ namespace LewisEnglish.Helpers
                     page.Margin(28);
                     page.DefaultTextStyle(x => x.FontSize(10).FontColor(GrisTexto));
 
-                    // Marca de agua "PAGADO" (fondo, muy claro para no tapar el texto)
+                    // Marca de agua (fondo, muy claro para no tapar el texto)
                     page.Background().AlignCenter().AlignMiddle()
-                        .Text("PAGADO").FontSize(90).Bold().FontColor(MarcaAgua);
+                        .Text(saldoFinal > 0 ? "ABONO" : "PAGADO").FontSize(90).Bold().FontColor(MarcaAgua);
 
                     // ---------- Encabezado ----------
                     page.Header().Column(col =>
@@ -120,7 +133,7 @@ namespace LewisEnglish.Helpers
                             });
                         });
 
-                        // Detalle
+                        // Detalle del concepto
                         col.Item().PaddingTop(6).Table(t =>
                         {
                             t.ColumnsDefinition(c =>
@@ -143,9 +156,80 @@ namespace LewisEnglish.Helpers
                                 .Text($"RD$ {factura.Monto:N2}");
                         });
 
-                        // Total
+                        // ---------- Proceso de pago (abonos) ----------
+                        if (abonos.Count > 0)
+                        {
+                            col.Item().PaddingTop(6).Text("Proceso de pago")
+                                .Bold().FontColor(Navy).FontSize(11);
+
+                            col.Item().Table(t =>
+                            {
+                                t.ColumnsDefinition(c =>
+                                {
+                                    c.RelativeColumn(2);   // Fecha
+                                    c.RelativeColumn(3);   // Forma de pago
+                                    c.RelativeColumn(2);   // Abono
+                                    c.RelativeColumn(2);   // Saldo restante
+                                });
+
+                                t.Header(h =>
+                                {
+                                    h.Cell().Background(Navy).Padding(5)
+                                        .Text("Fecha").FontColor("#FFFFFF").Bold().FontSize(9);
+                                    h.Cell().Background(Navy).Padding(5)
+                                        .Text("Forma de pago").FontColor("#FFFFFF").Bold().FontSize(9);
+                                    h.Cell().Background(Navy).Padding(5).AlignRight()
+                                        .Text("Abono").FontColor("#FFFFFF").Bold().FontSize(9);
+                                    h.Cell().Background(Navy).Padding(5).AlignRight()
+                                        .Text("Saldo restante").FontColor("#FFFFFF").Bold().FontSize(9);
+                                });
+
+                                int i = 0;
+                                foreach (var ab in abonos)
+                                {
+                                    string fondo = (i % 2 == 0) ? GrisSuave : "#FFFFFF";
+                                    i++;
+                                    t.Cell().Background(fondo).Padding(5)
+                                        .Text($"{ab.Fecha:dd/MM/yyyy}").FontSize(9);
+                                    t.Cell().Background(fondo).Padding(5)
+                                        .Text(ab.FormaPagoTexto).FontSize(9);
+                                    t.Cell().Background(fondo).Padding(5).AlignRight()
+                                        .Text($"RD$ {ab.Monto:N2}").FontSize(9);
+                                    t.Cell().Background(fondo).Padding(5).AlignRight()
+                                        .Text($"RD$ {ab.SaldoDespues:N2}").FontSize(9);
+                                }
+                            });
+                        }
+
+                        // ---------- Resumen de montos ----------
+                        col.Item().PaddingTop(6).Table(t =>
+                        {
+                            t.ColumnsDefinition(c =>
+                            {
+                                c.RelativeColumn(3);
+                                c.RelativeColumn(2);
+                            });
+
+                            t.Cell().Background(GrisSuave).Padding(6)
+                                .Text("Total del periodo").FontColor(Navy);
+                            t.Cell().Background(GrisSuave).Padding(6).AlignRight()
+                                .Text($"RD$ {factura.Monto:N2}").FontColor(Navy);
+
+                            t.Cell().Background(GrisSuave).Padding(6)
+                                .Text("Total abonado").FontColor(Navy);
+                            t.Cell().Background(GrisSuave).Padding(6).AlignRight()
+                                .Text($"RD$ {totalAbonado:N2}").FontColor(Navy).Bold();
+
+                            t.Cell().Background(GrisSuave).Padding(6)
+                                .Text("Saldo pendiente").FontColor(Navy);
+                            t.Cell().Background(GrisSuave).Padding(6).AlignRight()
+                                .Text($"RD$ {saldoFinal:N2}")
+                                .FontColor(saldoFinal > 0 ? "#C0392B" : Turquesa).Bold();
+                        });
+
+                        // Total abonado destacado
                         col.Item().PaddingTop(4).AlignRight().Background(Turquesa).Padding(8)
-                            .Text($"TOTAL PAGADO: RD$ {factura.Monto:N2}")
+                            .Text($"TOTAL ABONADO: RD$ {totalAbonado:N2}")
                             .FontColor("#FFFFFF").Bold().FontSize(13);
 
                         // Forma de pago
@@ -159,7 +243,10 @@ namespace LewisEnglish.Helpers
                             c.Item().Text(t =>
                             {
                                 t.Span("Estado: ");
-                                t.Span("PAGADO").Bold().FontColor(Turquesa);
+                                if (saldoFinal > 0)
+                                    t.Span($"ABONO PARCIAL - Falta RD$ {saldoFinal:N2}").Bold().FontColor("#C0392B");
+                                else
+                                    t.Span("PAGADO").Bold().FontColor(Turquesa);
                             });
                         });
                     });

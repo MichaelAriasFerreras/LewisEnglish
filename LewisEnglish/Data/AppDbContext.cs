@@ -16,6 +16,7 @@ namespace LewisEnglish.Data
         public DbSet<Asistencia> Asistencias => Set<Asistencia>();
         public DbSet<Pago> Pagos => Set<Pago>();
         public DbSet<Factura> Facturas => Set<Factura>();
+        public DbSet<Abono> Abonos => Set<Abono>();
 
         /// <summary>
         /// Ruta del archivo de base de datos, en la carpeta de datos de la aplicacion.
@@ -59,6 +60,10 @@ namespace LewisEnglish.Data
             modelBuilder.Entity<Pago>().Property(p => p.Monto).HasColumnType("decimal(18,2)");
             modelBuilder.Entity<Pago>().Property(p => p.MontoPagado).HasColumnType("decimal(18,2)");
             modelBuilder.Entity<Factura>().Property(f => f.Monto).HasColumnType("decimal(18,2)");
+            modelBuilder.Entity<Abono>().Property(a => a.Monto).HasColumnType("decimal(18,2)");
+            modelBuilder.Entity<Abono>().Property(a => a.TotalPeriodo).HasColumnType("decimal(18,2)");
+            modelBuilder.Entity<Abono>().Property(a => a.TotalAcumulado).HasColumnType("decimal(18,2)");
+            modelBuilder.Entity<Abono>().Property(a => a.SaldoDespues).HasColumnType("decimal(18,2)");
 
             // Ignorar propiedades calculadas / de presentacion
             modelBuilder.Entity<Estudiante>().Ignore(e => e.HoraFin);
@@ -72,7 +77,13 @@ namespace LewisEnglish.Data
             modelBuilder.Entity<Pago>().Ignore(p => p.Saldo);
             modelBuilder.Entity<Pago>().Ignore(p => p.FrecuenciaTexto);
             modelBuilder.Entity<Pago>().Ignore(p => p.FormaPagoTexto);
+            modelBuilder.Entity<Pago>().Ignore(p => p.TotalTexto);
+            modelBuilder.Entity<Pago>().Ignore(p => p.AbonadoSaldoTexto);
+            modelBuilder.Entity<Pago>().Ignore(p => p.PagoDetalleTexto);
             modelBuilder.Entity<Factura>().Ignore(f => f.FormaPagoTexto);
+            modelBuilder.Entity<Abono>().Ignore(a => a.FormaPagoTexto);
+            modelBuilder.Entity<Abono>().Ignore(a => a.MontoSaldoTexto);
+            modelBuilder.Entity<Abono>().Ignore(a => a.FechaFormaTexto);
 
             // Datos por defecto: administrador inicial (el coach)
             modelBuilder.Entity<Admin>().HasData(new Admin

@@ -254,6 +254,23 @@
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
 
+                        <!-- Registro de abonos (movimientos de pago) -->
+                        <TextBlock Text="Registro de abonos (movimientos)" FontSize="14" FontWeight="SemiBold"
+                                   Foreground="{StaticResource Turquesa}" Margin="0,14,0,6" />
+                        <ItemsControl ItemsSource="{Binding AbonosSeleccionado}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Background="{StaticResource FondoPrincipal}" CornerRadius="8" Padding="10,8" Margin="0,0,0,6">
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding PeriodoEtiqueta}" Foreground="{StaticResource TextoPrincipal}" FontSize="12.5" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                            <TextBlock Text="{Binding MontoSaldoTexto}" Foreground="{StaticResource TextoPrincipal}" FontSize="12" Margin="0,2,0,0" TextWrapping="Wrap" />
+                                            <TextBlock Text="{Binding FechaFormaTexto}" Foreground="{StaticResource TextoSecundario}" FontSize="11.5" Margin="0,1,0,0" TextWrapping="Wrap" />
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
                         <!-- Historial de asistencia -->
                         <TextBlock Text="Historial de asistencia" FontSize="14" FontWeight="SemiBold"
                                    Foreground="{StaticResource Turquesa}" Margin="0,14,0,6" />
