@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows;
 using LewisEnglish.Helpers;
 using LewisEnglish.Models;
@@ -19,6 +20,10 @@ namespace LewisEnglish.ViewModels
         private Estudiante _editable = new();
         private bool _mostrarFormulario;
         private string _tituloFormulario = "Nuevo estudiante";
+        private bool _mostrarSoloMorosos;
+
+        // Lista completa (sin filtrar) para poder alternar el filtro de morosos.
+        private readonly List<Estudiante> _todos = new();
 
         public EstudiantesViewModel(DatabaseService db)
         {
@@ -30,6 +35,8 @@ namespace LewisEnglish.ViewModels
             CancelarCommand = new RelayCommand(_ => MostrarFormulario = false);
             EliminarCommand = new RelayCommand(_ => Eliminar(), _ => Seleccionado != null);
             WhatsAppCommand = new RelayCommand(p => EnviarWhatsApp(p as Estudiante));
+            FiltrarMorososCommand = new RelayCommand(_ => AlternarFiltroMorosos());
+            EditarVencimientoCommand = new RelayCommand(p => EditarVencimiento(p as Pago));
         }
 
         public ObservableCollection<Estudiante> Estudiantes { get; } = new();
@@ -71,19 +78,47 @@ namespace LewisEnglish.ViewModels
             }
         }
 
+        // ---- Resumen financiero del estudiante seleccionado ----
+        private decimal _totalFacturado;
+        private decimal _totalPagado;
+        private decimal _balancePendiente;
+
+        public string ResumenFacturadoTexto => $"RD$ {_totalFacturado:N2}";
+        public string ResumenPagadoTexto => $"RD$ {_totalPagado:N2}";
+        public string ResumenPendienteTexto => $"RD$ {_balancePendiente:N2}";
+
+        /// <summary>Texto del filtro de morosos (cambia segun este activo o no).</summary>
+        public string TextoFiltroMorosos => _mostrarSoloMorosos ? "Ver todos" : "Ver morosos";
+
+        public bool MostrarSoloMorosos
+        {
+            get => _mostrarSoloMorosos;
+            set { if (SetProperty(ref _mostrarSoloMorosos, value)) OnPropertyChanged(nameof(TextoFiltroMorosos)); }
+        }
+
         private void CargarDetalle()
         {
             PagosSeleccionado.Clear();
             AsistenciasSeleccionado.Clear();
             AbonosSeleccionado.Clear();
-            if (_seleccionado == null) return;
+            _totalFacturado = _totalPagado = _balancePendiente = 0;
 
-            foreach (var p in _db.ObtenerPagosPorEstudiante(_seleccionado.Id))
-                PagosSeleccionado.Add(p);
-            foreach (var a in _db.ObtenerAsistenciasPorEstudiante(_seleccionado.Id))
-                AsistenciasSeleccionado.Add(a);
-            foreach (var ab in _db.ObtenerAbonosPorEstudiante(_seleccionado.Id))
-                AbonosSeleccionado.Add(ab);
+            if (_seleccionado != null)
+            {
+                // Una sola conexion para las tres consultas (mas rapido que 3 por separado).
+                var detalle = _db.ObtenerDetalleEstudiante(_seleccionado.Id);
+                foreach (var p in detalle.Pagos) PagosSeleccionado.Add(p);
+                foreach (var a in detalle.Asistencias) AsistenciasSeleccionado.Add(a);
+                foreach (var ab in detalle.Abonos) AbonosSeleccionado.Add(ab);
+
+                _totalFacturado = detalle.Pagos.Sum(p => p.Monto);
+                _totalPagado = detalle.Pagos.Sum(p => p.MontoPagado);
+                _balancePendiente = detalle.Pagos.Sum(p => p.Saldo);
+            }
+
+            OnPropertyChanged(nameof(ResumenFacturadoTexto));
+            OnPropertyChanged(nameof(ResumenPagadoTexto));
+            OnPropertyChanged(nameof(ResumenPendienteTexto));
         }
 
         public Estudiante Editable
@@ -111,6 +146,7 @@ namespace LewisEnglish.ViewModels
         public Array Estados => Enum.GetValues(typeof(EstadoEstudiante));
         public List<string> Franjas => TimeHelper.FranjasHorarias();
         public List<double> Duraciones => new() { 0.5, 1, 1.5, 2, 2.5, 3 };
+        public List<int> DiasPago => Enumerable.Range(1, 31).ToList();
         public List<string> Bancos => new()
         {
             "Banreservas", "Banco Popular", "BHD Leon", "Scotiabank",
@@ -124,13 +160,36 @@ namespace LewisEnglish.ViewModels
         public RelayCommand CancelarCommand { get; }
         public RelayCommand EliminarCommand { get; }
         public RelayCommand WhatsAppCommand { get; }
+        public RelayCommand FiltrarMorososCommand { get; }
+        public RelayCommand EditarVencimientoCommand { get; }
 
         public void Cargar()
         {
-            Estudiantes.Clear();
+            // Refrescar estados de pago para que el indicador de mora sea correcto.
+            _db.GenerarPeriodos();
+
+            var morosos = _db.ObtenerIdsEstudiantesMorosos();
+            _todos.Clear();
             foreach (var e in _db.ObtenerEstudiantes())
-                Estudiantes.Add(e);
+            {
+                e.TieneMora = morosos.Contains(e.Id);
+                _todos.Add(e);
+            }
+            AplicarFiltro();
             MostrarFormulario = false;
+        }
+
+        private void AplicarFiltro()
+        {
+            Estudiantes.Clear();
+            var fuente = _mostrarSoloMorosos ? _todos.Where(e => e.TieneMora) : _todos;
+            foreach (var e in fuente) Estudiantes.Add(e);
+        }
+
+        private void AlternarFiltroMorosos()
+        {
+            MostrarSoloMorosos = !MostrarSoloMorosos;
+            AplicarFiltro();
         }
 
         private void Nuevo()
@@ -162,6 +221,12 @@ namespace LewisEnglish.ViewModels
                     MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
+            if (Editable.DiaPago < 1 || Editable.DiaPago > 31)
+            {
+                MessageBox.Show("El dia de pago debe estar entre 1 y 31.", "Validacion",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
 
             _db.GuardarEstudiante(Editable);
             MostrarFormulario = false;
@@ -178,6 +243,23 @@ namespace LewisEnglish.ViewModels
             {
                 _db.EliminarEstudiante(Seleccionado.Id);
                 Cargar();
+            }
+        }
+
+        /// <summary>Edita la fecha de vencimiento de un periodo desde el panel de detalle.</summary>
+        private void EditarVencimiento(Pago? pago)
+        {
+            if (pago == null) return;
+
+            var actual = pago.FechaVencimiento ?? pago.PeriodoFin;
+            var dlg = new Views.EditarVencimientoDialog(pago.Etiqueta, actual)
+            {
+                Owner = Application.Current?.MainWindow
+            };
+            if (dlg.ShowDialog() == true && dlg.FechaSeleccionada.HasValue)
+            {
+                _db.ActualizarFechaVencimiento(pago.Id, dlg.FechaSeleccionada.Value);
+                CargarDetalle(); // refrescar la lista para ver la nueva fecha
             }
         }
 
@@ -215,11 +297,13 @@ namespace LewisEnglish.ViewModels
             Email = e.Email,
             DiaClase = e.DiaClase,
             HoraInicio = e.HoraInicio,
+            DuracionHoras = e.DuracionHoras,
             Frecuencia = e.Frecuencia,
             Tarifa = e.Tarifa,
             FormaPago = e.FormaPago,
             Banco = e.Banco,
             Estado = e.Estado,
+            DiaPago = e.DiaPago,
             FechaRegistro = e.FechaRegistro
         };
     }

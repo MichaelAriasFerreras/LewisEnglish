@@ -101,6 +101,33 @@ namespace LewisEnglish.Converters
             => Binding.DoNothing;
     }
 
+    /// <summary>
+    /// Color para la fecha de vencimiento de un periodo (recibe el objeto Pago):
+    /// verde = pagado, rojo = vencido/no pagado, naranja = vence pronto (3 dias), gris = normal.
+    /// </summary>
+    public class VencimientoColorConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is Pago pago)
+            {
+                if (pago.Estado == EstadoPago.Pagado)
+                    return new SolidColorBrush((Color)ColorConverter.ConvertFromString("#16A34A")); // verde
+
+                var vence = pago.FechaVencimiento ?? pago.PeriodoFin;
+                var hoy = DateTime.Today;
+                if (vence.Date < hoy)
+                    return new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E53E3E")); // rojo (vencido)
+                if (vence.Date <= hoy.AddDays(3))
+                    return new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F5A623")); // naranja (vence pronto)
+            }
+            return new SolidColorBrush((Color)ColorConverter.ConvertFromString("#8FB0C4")); // gris (normal)
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+            => Binding.DoNothing;
+    }
+
     /// <summary>Convierte booleano en Visibility (parametro "invert" para invertir).</summary>
     public class BoolToVisibilityConverter : IValueConverter
     {

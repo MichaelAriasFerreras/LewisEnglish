@@ -10,6 +10,7 @@
     <conv:EstadoEstudianteColorConverter x:Key="EstadoEstudianteColorConverter" />
     <conv:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
     <conv:SeccionActivaConverter x:Key="SeccionActivaConverter" />
+    <conv:VencimientoColorConverter x:Key="VencimientoColorConverter" />
 
     <!-- ===================== Paleta de colores (Lewis) ===================== -->
     <SolidColorBrush x:Key="FondoPrincipal" Color="#0A1C2E" />

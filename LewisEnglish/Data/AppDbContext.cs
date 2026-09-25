@@ -72,6 +72,9 @@ namespace LewisEnglish.Data
             modelBuilder.Entity<Estudiante>().Ignore(e => e.FrecuenciaTexto);
             modelBuilder.Entity<Estudiante>().Ignore(e => e.EstadoTexto);
             modelBuilder.Entity<Estudiante>().Ignore(e => e.FormaPagoTexto);
+            modelBuilder.Entity<Estudiante>().Ignore(e => e.DiaPagoTexto);
+            modelBuilder.Entity<Estudiante>().Ignore(e => e.TieneMora);
+            modelBuilder.Entity<Estudiante>().Ignore(e => e.MoraTexto);
             modelBuilder.Entity<Asistencia>().Ignore(a => a.EstadoTexto);
             modelBuilder.Entity<Pago>().Ignore(p => p.EstadoTexto);
             modelBuilder.Entity<Pago>().Ignore(p => p.Saldo);

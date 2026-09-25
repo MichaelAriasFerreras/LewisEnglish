@@ -17,6 +17,8 @@
                            Style="{StaticResource SubtituloPagina}" />
             </StackPanel>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                <Button Content="{Binding TextoFiltroMorosos}" Style="{StaticResource BotonSecundario}"
+                        Command="{Binding FiltrarMorososCommand}" Margin="0,0,8,0" />
                 <Button Content="Nuevo" Style="{StaticResource BotonPrimario}"
                         Command="{Binding NuevoCommand}" Margin="0,0,8,0" />
                 <Button Content="Editar" Style="{StaticResource BotonSecundario}"
@@ -39,6 +41,7 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
@@ -107,6 +110,11 @@
                             </ComboBox.Style>
                         </ComboBox>
                     </StackPanel>
+
+                    <StackPanel Grid.Row="4" Grid.Column="0" Margin="0,8,10,0">
+                        <TextBlock Text="Dia de pago (del mes)" Style="{StaticResource EtiquetaCampo}" />
+                        <ComboBox ItemsSource="{Binding DiasPago}" SelectedItem="{Binding Editable.DiaPago}" />
+                    </StackPanel>
                 </Grid>
 
                 <StackPanel Orientation="Horizontal" Margin="0,14,0,0">
@@ -142,6 +150,15 @@
                                     <TextBlock Text="{Binding EstadoTexto}" FontWeight="SemiBold"
                                                VerticalAlignment="Center"
                                                Foreground="{Binding Estado, Converter={StaticResource EstadoEstudianteColorConverter}}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Mora" Width="Auto">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding MoraTexto}" FontWeight="SemiBold" FontSize="12"
+                                               VerticalAlignment="Center"
+                                               Foreground="{StaticResource Rojo}" />
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
@@ -200,6 +217,7 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
 
                             <TextBlock Grid.Row="0" Grid.Column="0" Text="Telefono:" Foreground="{StaticResource TextoSecundario}" Margin="0,3,10,3" />
@@ -225,7 +243,35 @@
 
                             <TextBlock Grid.Row="7" Grid.Column="0" Text="Pago:" Foreground="{StaticResource TextoSecundario}" Margin="0,3,10,3" />
                             <TextBlock Grid.Row="7" Grid.Column="1" Text="{Binding Seleccionado.FormaPagoTexto}" Foreground="{StaticResource TextoPrincipal}" Margin="0,3" TextWrapping="Wrap" />
+
+                            <TextBlock Grid.Row="8" Grid.Column="0" Text="Dia de pago:" Foreground="{StaticResource TextoSecundario}" Margin="0,3,10,3" />
+                            <TextBlock Grid.Row="8" Grid.Column="1" Text="{Binding Seleccionado.DiaPagoTexto}" Foreground="{StaticResource TextoPrincipal}" Margin="0,3" />
                         </Grid>
+
+                        <!-- Resumen financiero -->
+                        <TextBlock Text="Resumen de cuenta" FontSize="14" FontWeight="SemiBold"
+                                   Foreground="{StaticResource Turquesa}" Margin="0,18,0,6" />
+                        <Border Background="{StaticResource FondoPrincipal}" CornerRadius="8" Padding="12,10">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="Facturado" Foreground="{StaticResource TextoSecundario}" FontSize="11" />
+                                    <TextBlock Text="{Binding ResumenFacturadoTexto}" Foreground="{StaticResource TextoPrincipal}" FontSize="13" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="1">
+                                    <TextBlock Text="Pagado" Foreground="{StaticResource TextoSecundario}" FontSize="11" />
+                                    <TextBlock Text="{Binding ResumenPagadoTexto}" Foreground="{StaticResource Verde}" FontSize="13" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="2">
+                                    <TextBlock Text="Pendiente" Foreground="{StaticResource TextoSecundario}" FontSize="11" />
+                                    <TextBlock Text="{Binding ResumenPendienteTexto}" Foreground="{StaticResource Naranja}" FontSize="13" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                </StackPanel>
+                            </Grid>
+                        </Border>
 
                         <!-- Historial de pagos -->
                         <TextBlock Text="Historial de pagos" FontSize="14" FontWeight="SemiBold"
@@ -244,9 +290,15 @@
                                                 <TextBlock Text="{Binding TotalTexto}" Foreground="{StaticResource TextoPrincipal}" FontSize="12" Margin="0,2,0,0" />
                                                 <TextBlock Text="{Binding AbonadoSaldoTexto}" Foreground="{StaticResource TextoSecundario}" FontSize="11.5" Margin="0,1,0,0" TextWrapping="Wrap" />
                                                 <TextBlock Text="{Binding PagoDetalleTexto}" Foreground="{StaticResource TextoSecundario}" FontSize="11" Margin="0,1,0,0" TextWrapping="Wrap" />
-                                                <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
-                                                    <TextBlock Text="{Binding FechaVencimientoTexto, StringFormat='Vence: {0}'}" Foreground="{StaticResource TextoSecundario}" FontSize="11" />
-                                                    <TextBlock Text="  ·  Adelantado" Foreground="{StaticResource Turquesa}" FontSize="11" FontWeight="SemiBold">
+                                                <StackPanel Orientation="Horizontal" Margin="0,2,0,0" VerticalAlignment="Center">
+                                                    <TextBlock Text="{Binding FechaVencimientoTexto, StringFormat='Vence: {0}'}" FontSize="11" FontWeight="SemiBold"
+                                                               VerticalAlignment="Center"
+                                                               Foreground="{Binding Converter={StaticResource VencimientoColorConverter}}" />
+                                                    <Button Content="Editar" FontSize="10" Padding="6,1" Margin="6,0,0,0" VerticalAlignment="Center"
+                                                            Style="{StaticResource BotonSecundario}"
+                                                            Command="{Binding DataContext.EditarVencimientoCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                            CommandParameter="{Binding}" />
+                                                    <TextBlock Text="  ·  Adelantado" Foreground="{StaticResource Turquesa}" FontSize="11" FontWeight="SemiBold" VerticalAlignment="Center">
                                                         <TextBlock.Style>
                                                             <Style TargetType="TextBlock">
                                                                 <Setter Property="Visibility" Value="Collapsed" />

@@ -1,0 +1,28 @@
+<Window x:Class="LewisEnglish.Views.EditarVencimientoDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Editar fecha de vencimiento"
+        Height="240" Width="380"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent">
+
+    <Border Background="{StaticResource FondoPanel}" CornerRadius="14" BorderBrush="{StaticResource BordeSuave}" BorderThickness="1">
+        <StackPanel Margin="22,20">
+            <TextBlock Text="Editar fecha de vencimiento" FontSize="16" FontWeight="Bold"
+                       Foreground="{StaticResource TextoPrincipal}" />
+            <TextBlock x:Name="TxtPeriodo" FontSize="12" Foreground="{StaticResource TextoSecundario}"
+                       Margin="0,4,0,0" TextWrapping="Wrap" />
+
+            <TextBlock Text="Nueva fecha de vencimiento" Style="{StaticResource EtiquetaCampo}" Margin="0,16,0,4" />
+            <DatePicker x:Name="Picker" />
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,22,0,0">
+                <Button Content="Guardar" Style="{StaticResource BotonExito}" Margin="0,0,8,0" Click="Guardar_Click" />
+                <Button Content="Cancelar" Style="{StaticResource BotonSecundario}" Click="Cancelar_Click" />
+            </StackPanel>
+        </StackPanel>
+    </Border>
+</Window>

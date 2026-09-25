@@ -122,12 +122,26 @@ namespace LewisEnglish.Models
 
         public EstadoEstudiante Estado { get; set; } = EstadoEstudiante.Activo;
 
+        /// <summary>Dia del mes (1-31) en que el estudiante realiza su pago.</summary>
+        public int DiaPago { get; set; } = 1;
+
         public DateTime FechaRegistro { get; set; } = DateTime.Now;
 
         public List<Asistencia> Asistencias { get; set; } = new();
         public List<Pago> Pagos { get; set; } = new();
 
         // --------- Propiedades calculadas (no persistidas) ---------
+
+        private bool _tieneMora;
+        /// <summary>True si el estudiante tiene pagos vencidos o parciales (se calcula al cargar la lista).</summary>
+        public bool TieneMora
+        {
+            get => _tieneMora;
+            set { _tieneMora = value; Notificar(); }
+        }
+
+        /// <summary>Texto de aviso de mora para la lista de estudiantes.</summary>
+        public string MoraTexto => TieneMora ? "● En mora" : string.Empty;
 
         /// <summary>Hora de fin = hora de inicio + duracion personalizada.</summary>
         public string HoraFin => TimeHelper.CalcularHoraFin(HoraInicio, DuracionHoras);
@@ -145,6 +159,9 @@ namespace LewisEnglish.Models
         public string FormaPagoTexto => FormaPago == FormaPago.Transferencia
             ? (string.IsNullOrWhiteSpace(Banco) ? "Transferencia" : $"Transferencia - {Banco}")
             : "Efectivo";
+
+        /// <summary>Texto del dia de pago, ej. "Día 15".</summary>
+        public string DiaPagoTexto => $"Día {DiaPago}";
     }
 
     /// <summary>

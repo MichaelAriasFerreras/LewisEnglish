@@ -93,11 +93,14 @@ namespace LewisEnglish.Services
                     ""Banco"" TEXT NOT NULL,
                     ""Estado"" INTEGER NOT NULL,
                     ""FechaRegistro"" TEXT NOT NULL,
-                    ""DuracionHoras"" REAL NOT NULL DEFAULT 2.0
+                    ""DuracionHoras"" REAL NOT NULL DEFAULT 2.0,
+                    ""DiaPago"" INTEGER NOT NULL DEFAULT 1
                 );");
 
             // Migracion: agregar columna DuracionHoras a bases de datos existentes
             EjecutarSqlSilencioso(db, @"ALTER TABLE ""Estudiantes"" ADD COLUMN ""DuracionHoras"" REAL NOT NULL DEFAULT 2.0");
+            // v2.0.0: dia del mes en que el estudiante paga
+            EjecutarSqlSilencioso(db, @"ALTER TABLE ""Estudiantes"" ADD COLUMN ""DiaPago"" INTEGER NOT NULL DEFAULT 1");
 
             db.Database.ExecuteSqlRaw(
                 @"CREATE TABLE IF NOT EXISTS ""Asistencias"" (
@@ -250,6 +253,8 @@ namespace LewisEnglish.Services
                     existente.FormaPago = estudiante.FormaPago;
                     existente.Banco = estudiante.Banco;
                     existente.Estado = estudiante.Estado;
+                    existente.DuracionHoras = estudiante.DuracionHoras;
+                    existente.DiaPago = estudiante.DiaPago;
                 }
             }
             db.SaveChanges();
@@ -358,7 +363,7 @@ namespace LewisEnglish.Services
                         FormaPago = est.FormaPago,
                         Banco = est.Banco,
                         FacturaGenerada = false,
-                        FechaVencimiento = per.Fin
+                        FechaVencimiento = CalcularVencimiento(est.DiaPago, per.Fin)
                     });
                     cambios = true;
                 }
@@ -366,6 +371,65 @@ namespace LewisEnglish.Services
 
             if (cambios) db.SaveChanges();
             ActualizarEstadosVencidos();
+        }
+
+        /// <summary>
+        /// Calcula la fecha de vencimiento de un periodo usando el dia de pago del
+        /// estudiante (1-31), ubicandolo en el mes del fin del periodo. Si el dia
+        /// excede los dias del mes, se ajusta al ultimo dia disponible.
+        /// </summary>
+        public static DateTime CalcularVencimiento(int diaPago, DateTime periodoFin)
+        {
+            int dia = diaPago < 1 ? 1 : diaPago;
+            int anio = periodoFin.Year;
+            int mes = periodoFin.Month;
+            int diasEnMes = DateTime.DaysInMonth(anio, mes);
+            if (dia > diasEnMes) dia = diasEnMes;
+            return new DateTime(anio, mes, dia);
+        }
+
+        /// <summary>Devuelve los Id de estudiantes con pagos vencidos o parciales (en mora).</summary>
+        public HashSet<int> ObtenerIdsEstudiantesMorosos()
+        {
+            using var db = new AppDbContext();
+            return db.Pagos
+                .Where(p => p.Estado == EstadoPago.Vencido || p.Estado == EstadoPago.Parcial)
+                .Select(p => p.EstudianteId)
+                .Distinct()
+                .ToHashSet();
+        }
+
+        /// <summary>Actualiza solo la fecha de vencimiento de un periodo especifico.</summary>
+        public void ActualizarFechaVencimiento(int pagoId, DateTime fechaVencimiento)
+        {
+            using var db = new AppDbContext();
+            var pago = db.Pagos.Find(pagoId);
+            if (pago == null) return;
+            pago.FechaVencimiento = fechaVencimiento;
+            db.SaveChanges();
+        }
+
+        /// <summary>
+        /// Carga en una sola conexion el detalle de pagos, asistencias y abonos de un
+        /// estudiante. Reemplaza tres consultas independientes (mas lentas).
+        /// </summary>
+        public (List<Pago> Pagos, List<Asistencia> Asistencias, List<Abono> Abonos)
+            ObtenerDetalleEstudiante(int estudianteId)
+        {
+            using var db = new AppDbContext();
+            var pagos = db.Pagos
+                .Where(p => p.EstudianteId == estudianteId)
+                .OrderByDescending(p => p.PeriodoInicio)
+                .ToList();
+            var asistencias = db.Asistencias
+                .Where(a => a.EstudianteId == estudianteId)
+                .OrderByDescending(a => a.Fecha)
+                .ToList();
+            var abonos = db.Abonos
+                .Where(a => a.EstudianteId == estudianteId)
+                .OrderByDescending(a => a.Fecha)
+                .ToList();
+            return (pagos, asistencias, abonos);
         }
 
         /// <summary>Marca como vencidos los periodos pendientes cuya fecha fin ya paso.</summary>
