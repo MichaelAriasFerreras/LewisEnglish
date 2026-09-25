@@ -244,6 +244,33 @@
                                                 <TextBlock Text="{Binding TotalTexto}" Foreground="{StaticResource TextoPrincipal}" FontSize="12" Margin="0,2,0,0" />
                                                 <TextBlock Text="{Binding AbonadoSaldoTexto}" Foreground="{StaticResource TextoSecundario}" FontSize="11.5" Margin="0,1,0,0" TextWrapping="Wrap" />
                                                 <TextBlock Text="{Binding PagoDetalleTexto}" Foreground="{StaticResource TextoSecundario}" FontSize="11" Margin="0,1,0,0" TextWrapping="Wrap" />
+                                                <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
+                                                    <TextBlock Text="{Binding FechaVencimientoTexto, StringFormat='Vence: {0}'}" Foreground="{StaticResource TextoSecundario}" FontSize="11" />
+                                                    <TextBlock Text="  ·  Adelantado" Foreground="{StaticResource Turquesa}" FontSize="11" FontWeight="SemiBold">
+                                                        <TextBlock.Style>
+                                                            <Style TargetType="TextBlock">
+                                                                <Setter Property="Visibility" Value="Collapsed" />
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding PagoAdelantado}" Value="True">
+                                                                        <Setter Property="Visibility" Value="Visible" />
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </TextBlock.Style>
+                                                    </TextBlock>
+                                                </StackPanel>
+                                                <TextBlock Text="{Binding Nota}" Foreground="{StaticResource TextoSecundario}" FontSize="11" FontStyle="Italic" Margin="0,1,0,0" TextWrapping="Wrap">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock">
+                                                            <Setter Property="Visibility" Value="Visible" />
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding Nota}" Value="">
+                                                                    <Setter Property="Visibility" Value="Collapsed" />
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
                                             </StackPanel>
                                             <TextBlock Grid.Column="1" Text="{Binding EstadoTexto}" FontWeight="SemiBold" FontSize="12"
                                                        VerticalAlignment="Top" Margin="6,0,0,0"

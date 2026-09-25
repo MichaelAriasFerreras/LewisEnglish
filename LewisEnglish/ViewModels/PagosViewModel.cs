@@ -25,6 +25,9 @@ namespace LewisEnglish.ViewModels
         private decimal _montoEditable;
         private decimal _montoAbono;
         private decimal _montoPagadoEditable;
+        private DateTime? _fechaVencimientoEditable;
+        private string _notaEditable = string.Empty;
+        private bool _pagoAdelantadoEditable;
 
         public PagosViewModel(DatabaseService db)
         {
@@ -60,6 +63,9 @@ namespace LewisEnglish.ViewModels
                     // Por defecto el monto a abonar es el saldo pendiente (un clic paga todo lo que falta)
                     MontoAbono = value.Saldo;
                     if (value.FechaPago.HasValue) FechaPago = value.FechaPago.Value;
+                    FechaVencimientoEditable = value.FechaVencimiento;
+                    NotaEditable = value.Nota ?? string.Empty;
+                    PagoAdelantadoEditable = value.PagoAdelantado;
                     OnPropertyChanged(nameof(FormaPago));
                     OnPropertyChanged(nameof(Banco));
                 }
@@ -97,6 +103,15 @@ namespace LewisEnglish.ViewModels
 
         /// <summary>Total abonado del periodo (permite corregir lo ya pagado si se ingreso por error).</summary>
         public decimal MontoPagadoEditable { get => _montoPagadoEditable; set => SetProperty(ref _montoPagadoEditable, value); }
+
+        /// <summary>Fecha de vencimiento editable del periodo seleccionado.</summary>
+        public DateTime? FechaVencimientoEditable { get => _fechaVencimientoEditable; set => SetProperty(ref _fechaVencimientoEditable, value); }
+
+        /// <summary>Nota/comentario editable del periodo seleccionado.</summary>
+        public string NotaEditable { get => _notaEditable; set => SetProperty(ref _notaEditable, value); }
+
+        /// <summary>Indica si el pago fue adelantado.</summary>
+        public bool PagoAdelantadoEditable { get => _pagoAdelantadoEditable; set => SetProperty(ref _pagoAdelantadoEditable, value); }
 
         public RelayCommand RegistrarPagoCommand { get; }
         public RelayCommand GuardarCambiosCommand { get; }
@@ -206,7 +221,8 @@ namespace LewisEnglish.ViewModels
             if (r != MessageBoxResult.Yes) return;
 
             _db.ActualizarPago(Seleccionado.Id, MontoEditable, abonado, FormaPago,
-                FormaPago == FormaPago.Transferencia ? Banco : string.Empty, FechaPago);
+                FormaPago == FormaPago.Transferencia ? Banco : string.Empty, FechaPago,
+                FechaVencimientoEditable, PagoAdelantadoEditable, NotaEditable);
 
             Mensaje = $"Cambios guardados. Total: RD$ {MontoEditable:N2}, abonado: RD$ {abonado:N2}, saldo: RD$ {saldo:N2}.";
             Cargar();

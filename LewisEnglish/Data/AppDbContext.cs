@@ -80,6 +80,8 @@ namespace LewisEnglish.Data
             modelBuilder.Entity<Pago>().Ignore(p => p.TotalTexto);
             modelBuilder.Entity<Pago>().Ignore(p => p.AbonadoSaldoTexto);
             modelBuilder.Entity<Pago>().Ignore(p => p.PagoDetalleTexto);
+            modelBuilder.Entity<Pago>().Ignore(p => p.PagoAdelantadoTexto);
+            modelBuilder.Entity<Pago>().Ignore(p => p.FechaVencimientoTexto);
             modelBuilder.Entity<Factura>().Ignore(f => f.FormaPagoTexto);
             modelBuilder.Entity<Abono>().Ignore(a => a.FormaPagoTexto);
             modelBuilder.Entity<Abono>().Ignore(a => a.MontoSaldoTexto);

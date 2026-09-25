@@ -90,8 +90,8 @@
                 <!-- Separador -->
                 <Border Height="1" Background="{StaticResource BordeSuave}" Margin="0,14,0,12" />
 
-                <!-- Corregir montos ingresados por error -->
-                <TextBlock Text="Corregir montos (si se ingreso algo por error)" FontSize="13.5" FontWeight="SemiBold"
+                <!-- Corregir montos y datos del periodo -->
+                <TextBlock Text="Editar periodo (montos, vencimiento, notas)" FontSize="13.5" FontWeight="SemiBold"
                            Foreground="{StaticResource AzulClaro}" Margin="0,0,0,6" />
                 <StackPanel Orientation="Horizontal">
                     <StackPanel Margin="0,0,14,0">
@@ -101,6 +101,20 @@
                     <StackPanel Margin="0,0,14,0">
                         <TextBlock Text="Total abonado (RD$)" Style="{StaticResource EtiquetaCampo}" />
                         <TextBox Width="150" Text="{Binding MontoPagadoEditable, StringFormat=N2, UpdateSourceTrigger=PropertyChanged}" />
+                    </StackPanel>
+                    <StackPanel Margin="0,0,14,0">
+                        <TextBlock Text="Fecha de vencimiento" Style="{StaticResource EtiquetaCampo}" />
+                        <DatePicker Width="150" SelectedDate="{Binding FechaVencimientoEditable}" />
+                    </StackPanel>
+                    <StackPanel Margin="0,0,14,0" VerticalAlignment="Bottom">
+                        <CheckBox Content="Pago adelantado" IsChecked="{Binding PagoAdelantadoEditable}"
+                                  Foreground="{StaticResource TextoPrincipal}" FontSize="12.5" Margin="0,0,0,6" />
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                    <StackPanel Margin="0,0,14,0">
+                        <TextBlock Text="Notas" Style="{StaticResource EtiquetaCampo}" />
+                        <TextBox Width="420" Text="{Binding NotaEditable, UpdateSourceTrigger=PropertyChanged}" />
                     </StackPanel>
                     <Button Content="Guardar cambios" Style="{StaticResource BotonExito}"
                             VerticalAlignment="Bottom" Command="{Binding GuardarCambiosCommand}" />
@@ -131,6 +145,9 @@
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                     <DataGridTextColumn Header="Fecha de pago" Binding="{Binding FechaPago, Converter={StaticResource DateConverter}}" Width="Auto" />
+                    <DataGridTextColumn Header="Vencimiento" Binding="{Binding FechaVencimientoTexto}" Width="Auto" />
+                    <DataGridTextColumn Header="Adelantado" Binding="{Binding PagoAdelantadoTexto}" Width="Auto" />
+                    <DataGridTextColumn Header="Nota" Binding="{Binding Nota}" Width="Auto" />
                     <DataGridTemplateColumn Header="Recordatorio" Width="Auto">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>

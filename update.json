@@ -1,5 +1,4 @@
 {
-  "version": "1.8.0",
-  "url": "https://github.com/MichaelAriasFerreras/LewisEnglish/releases/download/v1.8.0/LewisEnglish-app.zip",
-  "notes": "Novedades: (1) Se corrigio el error de actualizacion 'The process cannot access the file... because it is being used by another process': ahora el actualizador cierra automaticamente la aplicacion antes de reemplazar los archivos y reintenta si algun archivo esta en uso, para que la actualizacion se complete sin errores. (2) Registro completo de abonos: cada vez que un estudiante paga (total o parcial) se guarda el movimiento con el monto abonado, la forma de pago, la fecha y cuanto queda pendiente. En el detalle del estudiante veras la seccion 'Registro de abonos (movimientos)' con todo el historial. (3) Las facturas ahora muestran el proceso de pago completo: una tabla con cada abono (fecha, forma de pago, monto y saldo restante) y un resumen con Total del periodo, Total abonado y Saldo pendiente."
+  "version": "1.9.0",
+  "download_url": "https://github.com/MichaelAriasFerreras/LewisEnglish/releases/latest/download/LewisEnglish-app.zip"
 }

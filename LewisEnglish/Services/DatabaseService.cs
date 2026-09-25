@@ -132,6 +132,13 @@ namespace LewisEnglish.Services
             // Backfill: los periodos ya marcados como Pagados (Estado=1) deben tener el total abonado
             EjecutarSqlSilencioso(db, @"UPDATE ""Pagos"" SET ""MontoPagado"" = ""Monto"" WHERE ""Estado"" = 1 AND ""MontoPagado"" = 0");
 
+            // v1.9.0: fecha de vencimiento, pago adelantado y nota por periodo
+            EjecutarSqlSilencioso(db, @"ALTER TABLE ""Pagos"" ADD COLUMN ""FechaVencimiento"" TEXT NULL");
+            EjecutarSqlSilencioso(db, @"ALTER TABLE ""Pagos"" ADD COLUMN ""PagoAdelantado"" INTEGER NOT NULL DEFAULT 0");
+            EjecutarSqlSilencioso(db, @"ALTER TABLE ""Pagos"" ADD COLUMN ""Nota"" TEXT NOT NULL DEFAULT ''");
+            // Backfill: asignar FechaVencimiento = PeriodoFin para registros existentes sin fecha
+            EjecutarSqlSilencioso(db, @"UPDATE ""Pagos"" SET ""FechaVencimiento"" = ""PeriodoFin"" WHERE ""FechaVencimiento"" IS NULL");
+
             db.Database.ExecuteSqlRaw(
                 @"CREATE TABLE IF NOT EXISTS ""Facturas"" (
                     ""Id"" INTEGER NOT NULL CONSTRAINT ""PK_Facturas"" PRIMARY KEY AUTOINCREMENT,
@@ -350,7 +357,8 @@ namespace LewisEnglish.Services
                         Estado = estado,
                         FormaPago = est.FormaPago,
                         Banco = est.Banco,
-                        FacturaGenerada = false
+                        FacturaGenerada = false,
+                        FechaVencimiento = per.Fin
                     });
                     cambios = true;
                 }
@@ -490,6 +498,23 @@ namespace LewisEnglish.Services
 
             db.SaveChanges();
 
+            // Si el periodo quedo completo, abrir automaticamente la fecha de vencimiento
+            // del siguiente periodo pendiente del mismo estudiante
+            if (completo)
+            {
+                var siguiente = db.Pagos
+                    .Where(p => p.EstudianteId == pago.EstudianteId
+                             && p.Id != pago.Id
+                             && (p.Estado == EstadoPago.Pendiente || p.Estado == EstadoPago.Vencido || p.Estado == EstadoPago.Parcial))
+                    .OrderBy(p => p.PeriodoInicio)
+                    .FirstOrDefault();
+                if (siguiente != null && !siguiente.FechaVencimiento.HasValue)
+                {
+                    siguiente.FechaVencimiento = siguiente.PeriodoFin;
+                    db.SaveChanges();
+                }
+            }
+
             Factura? factura = null;
             // Generar factura solo cuando el periodo queda totalmente pagado (evita facturas "PAGADO" en abonos parciales)
             if (completo && !pago.FacturaGenerada)
@@ -510,7 +535,8 @@ namespace LewisEnglish.Services
         /// banco y fecha). Recalcula el estado y corrige la factura si existe. Sirve
         /// para corregir montos ingresados por error.
         /// </summary>
-        public void ActualizarPago(int pagoId, decimal montoTotal, decimal montoPagado, FormaPago formaPago, string banco, DateTime? fechaPago)
+        public void ActualizarPago(int pagoId, decimal montoTotal, decimal montoPagado, FormaPago formaPago, string banco, DateTime? fechaPago,
+            DateTime? fechaVencimiento = null, bool pagoAdelantado = false, string? nota = null)
         {
             using var db = new AppDbContext();
             var pago = db.Pagos.Find(pagoId);
@@ -526,6 +552,11 @@ namespace LewisEnglish.Services
             pago.FormaPago = formaPago;
             pago.Banco = formaPago == FormaPago.Transferencia ? (banco ?? string.Empty) : string.Empty;
             if (fechaPago.HasValue) pago.FechaPago = fechaPago;
+
+            // Nuevos campos v1.9.0
+            pago.FechaVencimiento = fechaVencimiento;
+            pago.PagoAdelantado = pagoAdelantado;
+            if (nota != null) pago.Nota = nota;
 
             // Recalcular estado segun lo abonado
             if (pago.MontoPagado >= pago.Monto && pago.Monto > 0)

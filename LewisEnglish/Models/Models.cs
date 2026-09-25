@@ -212,6 +212,15 @@ namespace LewisEnglish.Models
         /// <summary>Indica si ya se genero factura para este periodo pagado.</summary>
         public bool FacturaGenerada { get; set; }
 
+        /// <summary>Fecha en que vence el pago de este periodo.</summary>
+        public DateTime? FechaVencimiento { get; set; }
+
+        /// <summary>Indica si el estudiante pago este periodo por adelantado.</summary>
+        public bool PagoAdelantado { get; set; }
+
+        /// <summary>Nota o comentario sobre el pago (ej. "pago antes de tiempo", "atrasado").</summary>
+        public string Nota { get; set; } = string.Empty;
+
         // --------- Presentacion ---------
 
         /// <summary>Saldo pendiente = total - abonado. Nunca negativo.</summary>
@@ -253,6 +262,12 @@ namespace LewisEnglish.Models
         public string FormaPagoTexto => FormaPago == FormaPago.Transferencia
             ? (string.IsNullOrWhiteSpace(Banco) ? "Transferencia" : $"Transferencia - {Banco}")
             : "Efectivo";
+
+        /// <summary>"Si" o "No" segun si fue pago adelantado.</summary>
+        public string PagoAdelantadoTexto => PagoAdelantado ? "Sí" : "No";
+
+        /// <summary>Fecha de vencimiento formateada, o "-" si no tiene.</summary>
+        public string FechaVencimientoTexto => FechaVencimiento.HasValue ? FechaVencimiento.Value.ToString("dd/MM/yyyy") : "-";
     }
 
     /// <summary>
