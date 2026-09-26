@@ -144,6 +144,7 @@
                         <DataGridTextColumn Header="Horario" Binding="{Binding RangoHorario}" Width="Auto" />
                         <DataGridTextColumn Header="Frecuencia" Binding="{Binding FrecuenciaTexto}" Width="Auto" />
                         <DataGridTextColumn Header="Tarifa" Binding="{Binding Tarifa, Converter={StaticResource CurrencyConverter}}" Width="Auto" />
+                        <DataGridTextColumn Header="Día de Pago" Binding="{Binding DiaPagoTexto}" Width="Auto" />
                         <DataGridTemplateColumn Header="Estado" Width="Auto">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
